@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+
+  backend:
+    restart: always
+    container_name: django-budget-planner-backend
+    build:
+      context: ./budgetplanner
+      dockerfile: Dockerfile
+    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+
+  frontend:
+    restart: always
+    command: npm start
+    container_name: django-budget-planner-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    stdin_open: true
