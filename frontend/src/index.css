@@ -1,3 +1,91 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;500;600;700;800;900;1000&family=Nunito:wght@200;300;400;500;600;700;800;900;1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300&display=swap');
+
+@layer base {
+
+    .theme-base {
+        --peach: 255 195 160;
+    }
+
+    * {
+        font-family: 'Nunito Sans', sans-serif;
+    }
+}
+
+@layer utilities {
+
+    /* Background */
+
+    .background-container {
+        background: #FFAFBD;
+        /* fallback for old browsers */
+        background: -webkit-linear-gradient(220deg, #ffc3a0, #FFAFBD);
+        /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(220deg, #ffc3a0, #FFAFBD);
+        /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    }
+
+    .blob {
+        position: fixed;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        transform: translate(50px);
+    }
+
+    #particles-1 {
+        width: 80%;
+        height: 100%;
+        top: 0;
+        left: 10%;
+        position: fixed;
+        z-index: -1;
+        opacity: 0;
+    }
+
+    #particles-2 {
+        width: 80%;
+        height: 100%;
+        top: 0;
+        left: 10%;
+        position: fixed;
+        z-index: -1;
+        opacity: 0.7;
+    }
+
+    .front {
+        z-index: -1;
+    }
+
+
+    .back {
+        filter: blur(100px);
+        opacity: 0.8;
+        z-index: -3;
+    }
+
+    /* Button hover effect */
+    .button-hover-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        background-color: cornflowerblue;
+        clip-path: circle(0px at 50% 50%);
+        -webkit-clip-path: circle(0px at 50% 40%);
+        transition: all 300ms ease-in-out;
+    }
+
+    .button-hover-effect.active {
+        clip-path: circle(100px at 50% 50%);
+        -webkit-clip-path: circle(150px at 50% 50%);
+    }
+
+    /* Dashboard grid */
+    .main-dashboard-grid {
+        grid-template-rows: repeat(8, minmax(0, 1fr));
+    }
+}
