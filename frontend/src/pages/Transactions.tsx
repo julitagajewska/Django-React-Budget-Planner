@@ -1,8 +1,11 @@
 import React from 'react'
+import LoggedInPageContainer from '../layout/LoggedInPageContainer'
 
 const Transactions = () => {
     return (
-        <div>Transactions</div>
+        <LoggedInPageContainer>
+            Transactions
+        </LoggedInPageContainer>
     )
 }
 

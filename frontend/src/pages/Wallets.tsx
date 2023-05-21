@@ -1,8 +1,11 @@
 import React from 'react'
+import LoggedInPageContainer from '../layout/LoggedInPageContainer'
 
 const Wallets = () => {
     return (
-        <div>Wallets</div>
+        <LoggedInPageContainer>
+            Wallets
+        </LoggedInPageContainer>
     )
 }
 

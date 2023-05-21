@@ -1,8 +1,11 @@
 import React from 'react'
+import LoggedInPageContainer from '../layout/LoggedInPageContainer'
 
 const Profile = () => {
     return (
-        <div>Profile</div>
+        <LoggedInPageContainer>
+            Profile
+        </LoggedInPageContainer>
     )
 }
 
