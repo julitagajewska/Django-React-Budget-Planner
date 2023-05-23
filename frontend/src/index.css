@@ -88,4 +88,25 @@
     .main-dashboard-grid {
         grid-template-rows: repeat(8, minmax(0, 1fr));
     }
+
+    .x-axis path,
+    .x-axis line {
+        fill: none;
+        stroke: none;
+    }
+
+    .y-grid path {
+        fill: none;
+        stroke: none;
+    }
+
+    .y-grid line {
+        stroke: rgba(0, 0, 0, 0.1);
+        stroke-dasharray: 5;
+        stroke-width: 1px;
+    }
+
+    .y-grid {
+        color: transparent;
+    }
 }

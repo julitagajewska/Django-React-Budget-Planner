@@ -1,15 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext, AuthContextType } from '../context/AuthContext';
-import { getUsersWallets, getRecentTransactions, getWalletsTransactions } from '../services';
+import { getUsersWallets, getWalletsTransactions } from '../services';
 import PageContainer from '../layout/PageContainer';
 import Sidebar from '../components/Sidebar';
 import LoggedInPageContainer from '../layout/LoggedInPageContainer';
 
 import { BiChevronDown, BiPlus } from 'react-icons/bi'
-import { WalletType } from '../context/WalletContext';
+import { CategoryType, WalletType } from '../context/WalletContext';
 import { TransactionType } from '../data/types/Transactions';
 import moment from 'moment';
-import { getExpenses, getIncomes, getTotalExpensesValue, getTotalIncomesValue } from '../utils/Index';
+import { getExpenses, getIncomes, getRecentTransactionsArray, getTotalExpensesValue, getTotalIncomesValue } from '../utils/Index';
+import IncomesVsExpensesPlot from '../components/graphs/IcomesVsExpensesPlot';
+import ExpenseDistribution from '../components/graphs/ExpenseDistribution';
+import { getWalletsCategories } from '../services/APIRequests';
 
 const Home = () => {
 
@@ -19,8 +22,10 @@ const Home = () => {
     const [selectedWallet, setSelectedWallet] = useState<WalletType>();
     const [walletsDropdownVisible, setWalletsDropdownVisible] = useState(false);
     const [transactions, setTransactions] = useState<TransactionType[]>([]);
+    const [recentTransactions, setRecentTransactions] = useState<TransactionType[]>([])
     const [incomesTotal, setIncomesTotal] = useState<number>(0);
     const [expensesTotal, setExpensesTotal] = useState<number>(0);
+    const [categories, setCategories] = useState<CategoryType[]>([]);
 
     useEffect(() => {
         getUsersWallets(authTokens.accessToken, logout)
@@ -32,12 +37,17 @@ const Home = () => {
                     .then((response) => {
                         setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
                         setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
+                        setTransactions(response)
+                        console.log(response)
+                        setRecentTransactions(getRecentTransactionsArray(response));
                     })
 
-                getRecentTransactions(authTokens.accessToken, response[0].id, logout)
+                getWalletsCategories(authTokens.accessToken, response[0].id, logout)
                     .then((response) => {
-                        setTransactions(response)
-                    });
+                        // console.log('Categories: ')
+                        // console.log(response)
+                    }
+                    )
             })
     }, [])
 
@@ -47,11 +57,9 @@ const Home = () => {
                 .then((response) => {
                     setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
                     setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
+                    setTransactions(response);
+                    setRecentTransactions(getRecentTransactionsArray(response));
                 })
-            getRecentTransactions(authTokens.accessToken, selectedWallet.id, logout)
-                .then((response) => {
-                    setTransactions(response)
-                });
         }
 
 
@@ -103,24 +111,24 @@ const Home = () => {
                 </div>
                 <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 flex flex-col justify-center'>
                     <span className='text-sm'>Total incomes</span>
-                    <h1 className='font-bold text-xl text-opacity-90 text-green-700'>+ {incomesTotal} $</h1>
+                    <h1 className='font-bold text-xl text-opacity-90 text-green-700'>+ {incomesTotal.toFixed(2)} $</h1>
                 </div>
                 <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 flex flex-col justify-center'>
                     <span className='text-sm'>Total expenses</span>
-                    <h1 className='font-bold text-xl text-opacity-90 text-red-700'>- {expensesTotal} $</h1>
+                    <h1 className='font-bold text-xl text-opacity-90 text-red-700'>- {expensesTotal.toFixed(2)} $</h1>
                 </div>
 
                 <div className='h-full w-full flex flex-col shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-7 py-5 col-span-3 row-span-4'>
                     <div className='w-ful flex flex-row justify-between items-center mb-4'>
                         <h1 className='font-bold text-xl text-opacity-90'>Recent transactions</h1>
-                        <button className='bg-orange-600 bg-opacity-20 hover:bg-opacity-30 transition duration-200 ease-in-out cursor-pointer shadow-md flex flex-row items-center gap-2 w-fit px-4 py-1 rounded-md'>
+                        <button className='bg-orange-700 bg-opacity-20 hover:bg-opacity-30 transition duration-200 ease-in-out cursor-pointer shadow-md flex flex-row items-center gap-2 w-fit px-4 py-1 rounded-md'>
                             <BiPlus />
                             <span className='font-medium text-sm text-opacity-90'>New Transaction</span>
                         </button>
                     </div>
                     <ul className='flex flex-col h-full gap-2'>
-                        {transactions.map(transaction =>
-                            <div className='rounded-sm text-sm bg-orange-600 bg-opacity-0 hover:bg-opacity-10 cursor-pointer transition duration-200 ease-in-out w-full h-10 flex flex-row justify-between items-center gap-4 px-2'>
+                        {recentTransactions.map(transaction => {
+                            return <div className='rounded-sm text-sm bg-orange-600 bg-opacity-0 hover:bg-opacity-10 cursor-pointer transition duration-200 ease-in-out w-full h-10 flex flex-row justify-between items-center gap-4 px-2'>
                                 <div className='flex flex-col'>
                                     <span className='w-44 font-medium text-sm truncate text-ellipsis'>{transaction.description}</span>
                                     <span className='w-44 text-xs truncate text-ellipsis'>{transaction.recipient}</span>
@@ -134,13 +142,23 @@ const Home = () => {
                                     {transaction.value}
                                 </span>
                             </div>
+
+                        }
                         )}
                     </ul>
 
                 </div>
-                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-3 row-span-3'>Expense history</div>
-                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-4 row-span-4'>Incomes vs expenses</div>
-                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-2 row-span-4'>Expenses distribution</div>
+                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-3 row-span-3'>
+                    Incomes Vs Expenses
+                    <IncomesVsExpensesPlot transactions={transactions} />
+                </div>
+                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-4 row-span-4'>
+                    Expense history
+                </div>
+                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-2 row-span-4'>
+                    Expenses distribution
+                    <ExpenseDistribution transactions={transactions} />
+                </div>
 
             </div>
         </LoggedInPageContainer>
