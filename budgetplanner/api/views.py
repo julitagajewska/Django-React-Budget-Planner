@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 # from .models import Transaction
 # from .serializers import TransactionSerializer
 
-from .serializers import TransactionsSerializer, WalletsSerializer
+from .serializers import CategorySerializer, TransactionsSerializer, WalletsSerializer
 from .models import Wallet
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -57,6 +57,16 @@ def getWalletsTransactions(request, pk):
     wallet = Wallet.objects.get(id=pk)
     transactions = wallet.transaction_set.all()
     serializer = TransactionsSerializer(transactions, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getWalletsCategories(request, pk):
+    print(request)
+    wallet = Wallet.objects.get(id=pk)
+    transactions = wallet.categories.all()
+    serializer = CategorySerializer(transactions, many=True)
     return Response(serializer.data)
 
 

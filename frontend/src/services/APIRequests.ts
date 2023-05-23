@@ -90,3 +90,40 @@ export const getRecentTransactions = async (accessToken: string | null, id: numb
         handleError();
     }
 }
+
+export const getWalletsCategories = async (accessToken: string | null, id: number, handleError: () => void) => {
+    const response = await fetch(`http://127.0.0.1:8000/api/wallet/categories/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken
+        }
+    })
+
+    
+    if(response.status === 200) {
+        const responseJSON = await response.json();
+        // const transactionsArray = responseJSON.map((row: any) => {
+        //     let transaction: TransactionType = {
+        //         id: row.id,
+        //         value: row.value,
+        //         description: row.description,
+        //         recipient: row.recipient,
+        //         date: new Date(row.date),
+        //         categoryID: row.category,
+        //         transactionTypeID: row.transaction_type,
+        //         walletID: row.wallet,
+
+        //     }
+
+        //     return transaction
+        // })
+        // return transactionsArray
+
+        return responseJSON
+    }
+
+    if(response.statusText === 'Unauthorized') {
+        handleError();
+    }
+}

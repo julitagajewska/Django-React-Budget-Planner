@@ -1,8 +1,9 @@
-import { getIncomes, getTotalIncomesValue, getExpenses, getTotalExpensesValue } from "./TransactionOperations";
+import { getIncomes, getTotalIncomesValue, getExpenses, getTotalExpensesValue, getRecentTransactionsArray } from "./TransactionOperations";
 
 export {
     getIncomes,
     getTotalIncomesValue,
     getExpenses,
-    getTotalExpensesValue
+    getTotalExpensesValue,
+    getRecentTransactionsArray
 }
