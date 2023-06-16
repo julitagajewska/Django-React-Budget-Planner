@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import Profile, Wallet, Category, CategoryType, Transaction, TransactionType
+# from .models import CustomUser,Wallet, WalletCategory, OperationType, TransactionCategory, Transaction
 
-admin.site.register(Profile)
-admin.site.register(Wallet)
-admin.site.register(Category)
-admin.site.register(CategoryType)
-admin.site.register(Transaction)
-admin.site.register(TransactionType)
+# admin.site.register(CustomUser)
+# admin.site.register(Wallet)
+# admin.site.register(WalletCategory)
+# admin.site.register(OperationType)
+# admin.site.register(TransactionCategory)
+# admin.site.register(Transaction)

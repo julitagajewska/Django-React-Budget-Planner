@@ -91,7 +91,7 @@ const IncomesVsExpensesPlot = ({ transactions }: IncomesVsExpensesPlotProps) => 
     }
 
     const dataset = getDataset(monthsAndYears, incomes, expenses);
-    console.log(dataset)
+    // console.log(dataset)
 
     // Data accessors
     const getSum = (d: number) => d;

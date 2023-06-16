@@ -113,7 +113,7 @@ export const getLastSixMonths = (today: Moment): MonthAndYearType[] => {
         let targetMonth: number = currentMonth-i;
         let targetYear: number = currentYear;
 
-        console.log(currentMonth);
+        // console.log(currentMonth);
 
         if(targetMonth <= 0) {
             targetYear--

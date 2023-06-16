@@ -6,12 +6,13 @@ import Sidebar from '../components/Sidebar';
 import LoggedInPageContainer from '../layout/LoggedInPageContainer';
 
 import { BiChevronDown, BiPlus } from 'react-icons/bi'
-import { CategoryType, WalletType } from '../context/WalletContext';
+import { WalletType } from '../context/WalletContext';
+import { CategoryType } from '../data/types/Category';
 import { TransactionType } from '../data/types/Transactions';
 import moment from 'moment';
 import { getExpenses, getIncomes, getRecentTransactionsArray, getTotalExpensesValue, getTotalIncomesValue } from '../utils/Index';
 import IncomesVsExpensesPlot from '../components/graphs/IcomesVsExpensesPlot';
-import ExpenseDistribution from '../components/graphs/ExpenseDistribution';
+import TransactionDistribution from '../components/graphs/TransactionDistribution';
 import { getWalletsCategories } from '../services/APIRequests';
 
 const Home = () => {
@@ -38,14 +39,14 @@ const Home = () => {
                         setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
                         setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
                         setTransactions(response)
-                        console.log(response)
+                        // console.log(response)
                         setRecentTransactions(getRecentTransactionsArray(response));
                     })
 
                 getWalletsCategories(authTokens.accessToken, response[0].id, logout)
                     .then((response) => {
-                        // console.log('Categories: ')
-                        // console.log(response)
+                        console.log('Categories: ')
+                        console.log(response)
                     }
                     )
             })
@@ -72,14 +73,14 @@ const Home = () => {
                 <div className='flex flex-row gap-10 items-center'>
                     <h1 className='font-semibold'>Main Dashboard</h1>
                     <div className='relative'>
-                        <button className='flex flex-row justify-center items-center bg-orange-600 bg-opacity-20 cursor-pointer rounded-full pl-6 pr-4 pt-1 gap-2' onClick={() => setWalletsDropdownVisible(!walletsDropdownVisible)}>
-                            <span>{selectedWallet?.name}</span>
+                        <button className='flex flex-row justify-center items-center w-48 bg-orange-600 hover:bg-opacity-30 transition duration-200 ease-in-out shadow-md bg-opacity-20 cursor-pointer rounded-md pl-6 pr-4 pt-1 pb-1 gap-2' onClick={() => setWalletsDropdownVisible(!walletsDropdownVisible)}>
+                            <span className='overflow-hidden truncate'>{selectedWallet?.name}</span>
                             <BiChevronDown className={`${walletsDropdownVisible ? '-rotate-180' : ''} transition duration-150 ease-in-out`} />
                         </button>
-                        <ul className={`${walletsDropdownVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} transition duration-150 ease-in-out absolute left-0 top-10 backdrop-blur-md bg-orange-600 bg-opacity-20 flex flex-col justify-center items-center w-full rounded-xl gap-2 py-2`}>
+                        <ul className={`${walletsDropdownVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} shadow-md overflow-hidden text-ellipsis w-48 transition duration-150 ease-in-out absolute left-0 top-10 backdrop-blur-md bg-orange-600 bg-opacity-20 flex flex-col justify-center items-center rounded-xl gap-2 py-4 px-2`}>
                             {wallets.map((element) =>
                                 <li
-                                    className='cursor-pointer'
+                                    className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-600 bg-opacity-0 hover:bg-opacity-10 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
                                     onClick={() => {
                                         setSelectedWallet(element);
                                         setWalletsDropdownVisible(false);
@@ -157,7 +158,7 @@ const Home = () => {
                 </div>
                 <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-2 row-span-4'>
                     Expenses distribution
-                    <ExpenseDistribution transactions={transactions} />
+                    <TransactionDistribution transactions={transactions} usersCategories={categories} />
                 </div>
 
             </div>
