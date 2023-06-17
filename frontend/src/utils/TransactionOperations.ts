@@ -3,11 +3,11 @@ import { MonthAndYearType } from "../data/types/MonthAndYearType";
 import { TransactionType } from "../data/types/Transactions";
 import moment, {Moment} from 'moment';
 import Transactions from "../pages/Transactions";
-import { CategoryType } from "../data/types/Index";
+import { CategoryType, TransactionCategoryType } from "../data/types/Index";
 
 export const getIncomes = (transactions: TransactionType[]): TransactionType[] => {
     let incomes: TransactionType[] = [];
-    incomes = transactions.filter((transaction: TransactionType) => transaction.transactionTypeID === 1);
+    incomes = transactions.filter((transaction: TransactionType) => transaction.operationTypeID === 2);
     return incomes;
 }
 
@@ -19,7 +19,7 @@ export const getTotalIncomesValue = (incomes: TransactionType[]): number => {
 
 export const getExpenses = (transactions: TransactionType[]): TransactionType[] => {
     let expenses: TransactionType[] = [];
-    expenses = transactions.filter((transaction: TransactionType) => transaction.transactionTypeID === 2);
+    expenses = transactions.filter((transaction: TransactionType) => transaction.operationTypeID === 1);
     return expenses;
 }
 
@@ -54,7 +54,7 @@ export const getSumOfExpenses = (transactions: TransactionType[], monthAndYear: 
 
 export const filterTransactionsByType = (type: number) => {
     return (transactions: TransactionType[]) => {
-        return transactions.filter((transaction: TransactionType) => transaction.transactionTypeID === type)
+        return transactions.filter((transaction: TransactionType) => transaction.operationTypeID === type)
     }
 }
 
@@ -79,7 +79,7 @@ export const filterTransactionsByMonthAndYear = (monthAndYear: MonthAndYearType[
     }
 }
 
-export const filterTransactionsByCategories = (categories: CategoryType[]) => {
+export const filterTransactionsByCategories = (categories: TransactionCategoryType[]) => {
     return (transactions: TransactionType[]): TransactionType[][] => {
         let groupedTransactions: TransactionType[][] = [];
 

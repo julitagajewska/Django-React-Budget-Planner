@@ -1,4 +1,4 @@
-import { TransactionType } from "../data/types/Transactions";
+import { TransactionCategoryType, TransactionType } from "../data/types/Index";
 
 export const getUsersWallets = async (accessToken: string | null, handleError: () => void) => {
     const response = await fetch('http://127.0.0.1:8000/api/wallets/', {
@@ -35,14 +35,14 @@ export const getWalletsTransactions = async (accessToken: string | null, id: num
         const transactionsArray = responseJSON.map((row: any) => {
             let transaction: TransactionType = {
                 id: row.id,
+                name: row.name,
                 value: row.value,
                 description: row.description,
                 recipient: row.recipient,
                 date: new Date(row.date),
                 categoryID: row.category,
-                transactionTypeID: row.transaction_type,
+                operationTypeID: row.operationType,
                 walletID: row.wallet,
-
             }
 
             return transaction
@@ -55,8 +55,8 @@ export const getWalletsTransactions = async (accessToken: string | null, id: num
     }
 }
 
-export const getRecentTransactions = async (accessToken: string | null, id: number, handleError: () => void) => {
-    const response = await fetch(`http://127.0.0.1:8000/api/wallet/transactions/${id}`, {
+export const getWalletsTransactionCategories = async (accessToken: string | null, id: number, handleError: () => void) => {
+    const response = await fetch(`http://127.0.0.1:8000/api/wallet/transaction_categories/${id}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -64,26 +64,18 @@ export const getRecentTransactions = async (accessToken: string | null, id: numb
         }
     })
 
-    
-    if(response.status === 200) {
+        if(response.status === 200) {
         const responseJSON = await response.json();
         const transactionsArray = responseJSON.map((row: any) => {
-            let transaction: TransactionType = {
+            let transactionCategory: TransactionCategoryType = {
                 id: row.id,
-                value: row.value,
-                description: row.description,
-                recipient: row.recipient,
-                date: new Date(row.date),
-                categoryID: row.category,
-                transactionTypeID: row.transaction_type,
-                walletID: row.wallet,
-
+                name: row.name,
+                walletId: row.wallet,
+                operationTypeId: row.operationType
             }
-
-            return transaction
+            return transactionCategory
         })
-
-        return transactionsArray.reverse().slice(0, 5);
+        return transactionsArray
     }
 
     if(response.statusText === 'Unauthorized') {

@@ -1,7 +1,8 @@
-import { getUsersWallets, getWalletsTransactions, getRecentTransactions } from "./APIRequests";
+import { getUsersWallets, getWalletsTransactions, getWalletsTransactionCategories, getWalletsCategories } from "./APIRequests";
 
 export {
     getUsersWallets,
     getWalletsTransactions,
-    getRecentTransactions
+    getWalletsTransactionCategories,
+    getWalletsCategories
 }

@@ -3,11 +3,12 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+
 # from .models import Transaction
 # from .serializers import TransactionSerializer
 
-from .serializers import TransactionsSerializer, WalletsSerializer
-# from .models import Wallet
+from .serializers import TransactionCategoriesSerializer, TransactionsSerializer, WalletsSerializer
+from users.models import Wallet, TransactionCategory
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -40,24 +41,34 @@ def getRoutes(request):
     return Response(routes)
 
 # Views for retreiving database data
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def getUsersWallets(request):
-#     user = request.user
-#     wallets = user.wallet_set.all()
-#     serializer = WalletsSerializer(wallets, many=True)
-#     return Response(serializer.data)
 
 
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def getWalletsTransactions(request, pk):
-#     print(request)
-#     wallet = Wallet.objects.get(id=pk)
-#     transactions = wallet.transaction_set.all()
-#     serializer = TransactionsSerializer(transactions, many=True)
-#     return Response(serializer.data)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getUsersWallets(request):
+    user = request.user
+    wallets = user.wallet_set.all()
+    serializer = WalletsSerializer(wallets, many=True)
+    return Response(serializer.data)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getWalletsTransactions(request, pk):
+    wallet = Wallet.objects.get(id=pk)
+    transactions = wallet.transaction_set.all()
+    serializer = TransactionsSerializer(transactions, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getWalletsTransactionCategories(request, pk):
+    wallet = Wallet.objects.get(id=pk)
+    transactionCategories = TransactionCategory.objects.all().filter(wallet_id=wallet.id)
+    serializer = TransactionCategoriesSerializer(
+        transactionCategories, many=True)
+    return Response(serializer.data)
 
 # @api_view(['GET'])
 # @permission_classes([IsAuthenticated])

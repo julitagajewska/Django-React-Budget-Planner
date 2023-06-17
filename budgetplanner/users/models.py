@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.conf import settings
 from PIL import Image
+from django.forms import ValidationError
 
 
 class MyAccountManager(BaseUserManager):
@@ -84,9 +85,16 @@ class Wallet(models.Model):
     def __str__(self):
         return self.name
 
+    def get_transaction_categories(self):
+        transactionCategorySet = TransactionCategory.objects.all().filter(wallet_id=self.id)
+        return "\n".join([p.name for p in transactionCategorySet])
+
 
 class WalletCategory(models.Model):
     name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
 
 
 class OperationType(models.Model):
@@ -97,12 +105,17 @@ class OperationType(models.Model):
 
     status = models.CharField(max_length=100, choices=TYPE, default='expense')
 
+    def __str__(self):
+        return self.status
+
 
 class TransactionCategory(models.Model):
     name = models.CharField(max_length=50)
-    operationType = models.ForeignKey(OperationType, on_delete=models.CASCADE)
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
     operationType = models.ForeignKey(OperationType, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
 
 class Transaction(models.Model):
@@ -112,5 +125,25 @@ class Transaction(models.Model):
     recipient = models.CharField(max_length=30)
     date = models.DateTimeField(auto_now_add=False)
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
-    category = models.ForeignKey(TransactionCategory, on_delete=models.CASCADE)
     operationType = models.ForeignKey(OperationType, on_delete=models.CASCADE)
+    category = models.ForeignKey(TransactionCategory, on_delete=models.CASCADE)
+
+    # category = models.ForeignKey(
+    #     TransactionCategory,
+    #     on_delete=models.CASCADE,
+    #     limit_choices_to=models.Q(operationType=models.F('operationType')) &
+    #     models.Q(wallet=models.F('wallet')))
+
+    def __str__(self):
+        return self.name
+
+    def clean(self):
+        if self.operationType != self.operationType:
+            raise ValidationError(
+                "Invalid category for the selected operation type.")
+        if self.category.wallet != self.wallet:
+            raise ValidationError("Invalid category for the selected wallet.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)

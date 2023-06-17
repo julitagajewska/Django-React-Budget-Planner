@@ -1,19 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext, AuthContextType } from '../context/AuthContext';
-import { getUsersWallets, getWalletsTransactions } from '../services';
-import PageContainer from '../layout/PageContainer';
-import Sidebar from '../components/Sidebar';
+import { getUsersWallets, getWalletsTransactionCategories, getWalletsTransactions } from '../services';
 import LoggedInPageContainer from '../layout/LoggedInPageContainer';
-
 import { BiChevronDown, BiPlus } from 'react-icons/bi'
 import { WalletType } from '../context/WalletContext';
-import { CategoryType } from '../data/types/Category';
-import { TransactionType } from '../data/types/Transactions';
 import moment from 'moment';
 import { getExpenses, getIncomes, getRecentTransactionsArray, getTotalExpensesValue, getTotalIncomesValue } from '../utils/Index';
 import IncomesVsExpensesPlot from '../components/graphs/IcomesVsExpensesPlot';
 import TransactionDistribution from '../components/graphs/TransactionDistribution';
-import { getWalletsCategories } from '../services/APIRequests';
+import { TransactionCategoryType, TransactionType, CategoryType } from '../data/types/Index';
+import { HiOutlineArrowTrendingDown, HiOutlineArrowTrendingUp } from 'react-icons/hi2';
 
 const Home = () => {
 
@@ -27,6 +23,8 @@ const Home = () => {
     const [incomesTotal, setIncomesTotal] = useState<number>(0);
     const [expensesTotal, setExpensesTotal] = useState<number>(0);
     const [categories, setCategories] = useState<CategoryType[]>([]);
+    const [transactionCategories, setTransactionCategories] = useState<TransactionCategoryType[]>([]);
+    const [operationType, setOperationType] = useState<number>(1);
 
     useEffect(() => {
         getUsersWallets(authTokens.accessToken, logout)
@@ -43,24 +41,28 @@ const Home = () => {
                         setRecentTransactions(getRecentTransactionsArray(response));
                     })
 
-                getWalletsCategories(authTokens.accessToken, response[0].id, logout)
-                    .then((response) => {
-                        console.log('Categories: ')
-                        console.log(response)
-                    }
-                    )
+                // getWalletsCategories(authTokens.accessToken, response[0].id, logout)
+                //     .then((response) => {
+                //         console.log('Categories: ')
+                //         console.log(response)
+                //     })
             })
     }, [])
 
     useEffect(() => {
         if (selectedWallet) {
-            getWalletsTransactions(authTokens.accessToken, selectedWallet.id, logout)
+
+            getWalletsTransactionCategories(authTokens.accessToken, selectedWallet.id, logout)
                 .then((response) => {
-                    setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
-                    setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
-                    setTransactions(response);
-                    setRecentTransactions(getRecentTransactionsArray(response));
+                    setTransactionCategories(response);
                 })
+            // getWalletsTransactions(authTokens.accessToken, selectedWallet.id, logout)
+            //     .then((response) => {
+            //         setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
+            //         setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
+            //         setTransactions(response);
+            //         setRecentTransactions(getRecentTransactionsArray(response));
+            //     })
         }
 
 
@@ -131,15 +133,15 @@ const Home = () => {
                         {recentTransactions.map(transaction => {
                             return <div className='rounded-sm text-sm bg-orange-600 bg-opacity-0 hover:bg-opacity-10 cursor-pointer transition duration-200 ease-in-out w-full h-10 flex flex-row justify-between items-center gap-4 px-2'>
                                 <div className='flex flex-col'>
-                                    <span className='w-44 font-medium text-sm truncate text-ellipsis'>{transaction.description}</span>
-                                    <span className='w-44 text-xs truncate text-ellipsis'>{transaction.recipient}</span>
+                                    <span className='w-44 font-medium text-sm truncate text-ellipsis'>{transaction.name} - {transaction.recipient}</span>
+                                    <span className='w-44 text-xs truncate text-ellipsis'>{transaction.description}</span>
 
                                 </div>
-                                <span className='w-20'>{transaction.categoryID}</span>
+                                <span className='w-20'>{transactionCategories.find((category) => category.id == transaction.categoryID)?.name}</span>
                                 <span className='w-30'>{(moment(transaction.date)).format('DD MMM YYYY')}</span>
-                                <span className='w-30'>{(moment(transaction.date)).format('h:mm')}</span>
-                                <span className={`w-20 text-right ${transaction.transactionTypeID === 1 ? 'text-green-600 ' : 'text-red-600'}`}>
-                                    {transaction.transactionTypeID === 1 ? '+ ' : '- '}
+                                <span className='w-30'>{(moment(transaction.date)).format('HH:mm')}</span>
+                                <span className={`w-20 text-right ${transaction.operationTypeID === 2 ? 'text-green-600 ' : 'text-red-600'}`}>
+                                    {transaction.operationTypeID === 2 ? '+ ' : '- '}
                                     {transaction.value}
                                 </span>
                             </div>
@@ -156,9 +158,16 @@ const Home = () => {
                 <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-4 row-span-4'>
                     Expense history
                 </div>
-                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-2 row-span-4'>
-                    Expenses distribution
-                    <TransactionDistribution transactions={transactions} usersCategories={categories} />
+                <div className='h-full w-full flex flex-col items-center shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-4 col-span-2 row-span-4 gap-2'>
+                    <div className='flex flex-row w-full justify-between'>
+                        <p>{operationType === 1 ? 'Expenses' : 'Incomes'} distribution</p>
+                        <button className='bg-orange-600 bg-opacity-20 transition duration-200 ease-in-out shadow-sm hover:bg-opacity-30 text-black text-opacity-50 text-xl px-2 py-1 rounded-md' onClick={(e) => operationType === 1 ? setOperationType(2) : setOperationType(1)}>
+                            {operationType === 1 ? <HiOutlineArrowTrendingUp /> : <HiOutlineArrowTrendingDown />}
+                        </button>
+                    </div>
+                    <div className='h-[80%]] w-[90%]'>
+                        <TransactionDistribution transactions={transactions} transactionCategories={transactionCategories.filter(category => category.operationTypeId === operationType)} operationType={operationType} />
+                    </div>
                 </div>
 
             </div>
