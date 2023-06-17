@@ -11,8 +11,13 @@ import TransactionDistribution from '../components/graphs/TransactionDistributio
 import { TransactionCategoryType, TransactionType, CategoryType } from '../data/types/Index';
 import { HiOutlineArrowTrendingDown, HiOutlineArrowTrendingUp } from 'react-icons/hi2';
 import IncomesExpensesOverTime from '../components/graphs/IncomesExpensesOverTime';
+import { SidebarLinkContext, SidebarLinkContextType } from '../context/SidebarLinkContext';
 
 const Home = () => {
+
+    // Sidebar active link context
+    const { active, setActive } = useContext(SidebarLinkContext) as SidebarLinkContextType;
+    setActive("Dashboard");
 
     const { user, authTokens, logout } = useContext(AuthContext) as AuthContextType;
 
@@ -118,25 +123,27 @@ const Home = () => {
             {/* GRID */}
             <div className='main-dashboard-grid grid grid-cols-6 w-full h-full gap-4 text-white'>
 
-                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 flex flex-col justify-center'>
-                    <span className='text-sm'>Total funds</span>
-                    <h1 className='font-bold text-xl text-opacity-90'>{selectedWallet?.balance} $</h1>
-                </div>
-                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 flex flex-col justify-center'>
-                    <span className='text-sm'>Total incomes</span>
-                    <h1 className='font-bold text-xl text-opacity-90 text-green-700'>+ {incomesTotal.toFixed(2)} $</h1>
-                </div>
-                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 flex flex-col justify-center'>
-                    <span className='text-sm'>Total expenses</span>
-                    <h1 className='font-bold text-xl text-opacity-90 text-red-700'>- {expensesTotal.toFixed(2)} $</h1>
+                <div className='col-span-1 row-span-4 flex flex-col justify-between h-full gap-6'>
+                    <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 flex flex-col justify-center'>
+                        <span className='text-sm'>Total funds</span>
+                        <h1 className='font-bold text-xl text-opacity-90'>{selectedWallet?.balance} $</h1>
+                    </div>
+                    <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 flex flex-col justify-center'>
+                        <span className='text-sm'>Total incomes</span>
+                        <h1 className='font-bold text-xl text-opacity-90 text-green-700'>+ {incomesTotal.toFixed(2)} $</h1>
+                    </div>
+                    <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 flex flex-col justify-center'>
+                        <span className='text-sm'>Total expenses</span>
+                        <h1 className='font-bold text-xl text-opacity-90 text-red-700'>- {expensesTotal.toFixed(2)} $</h1>
+                    </div>
                 </div>
 
                 <div className='h-full w-full flex flex-col shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-7 py-5 col-span-3 row-span-4'>
                     <div className='w-ful flex flex-row justify-between items-center mb-4'>
-                        <h1 className='font-bold text-xl text-opacity-90'>Recent transactions</h1>
-                        <button className='bg-orange-700 bg-opacity-20 hover:bg-opacity-30 transition duration-200 ease-in-out cursor-pointer shadow-md flex flex-row items-center gap-2 w-fit px-4 py-1 rounded-md'>
+                        <h1 className='font-bold text-lg text-opacity-90'>Recent transactions</h1>
+                        <button className='bg-orange-600 bg-opacity-20 hover:bg-opacity-30 transition duration-200 ease-in-out cursor-pointer shadow-md flex flex-row items-center gap-2 w-fit px-4 py-1 rounded-md'>
                             <BiPlus />
-                            <span className='font-medium text-sm text-opacity-90'>New Transaction</span>
+                            <span className='font-medium text-opacity-90'>New Transaction</span>
                         </button>
                     </div>
                     <ul className='flex flex-col h-full gap-2'>
@@ -161,14 +168,43 @@ const Home = () => {
                     </ul>
 
                 </div>
-                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-3 row-span-3'>
-                    Incomes Vs Expenses
-                    <IncomesVsExpensesPlot transactions={transactions} />
+
+                <div className='h-full w-full flex flex-col items-center shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-5 col-span-2 row-span-4 gap-2'>
+                    <div className='flex flex-row w-full justify-between'>
+                        <h1 className='font-bold text-lg text-opacity-90'>{operationType === 1 ? 'Expenses' : 'Incomes'} distribution</h1>
+
+                        <div className='relative'>
+                            <button className='flex flex-row justify-center items-center w-36 bg-orange-600 hover:bg-opacity-30 transition duration-200 ease-in-out shadow-md bg-opacity-20 cursor-pointer rounded-md pl-6 pr-4 pt-1 pb-1 gap-2' onClick={() => setDonutChartDropdownVisible(!donutChartDropdownVisible)}>
+                                <span className='overflow-hidden truncate'>{operationType === 1 ? 'Expenses' : 'Incomes'}</span>
+                                <BiChevronDown className={`${donutChartDropdownVisible ? '-rotate-180' : ''} transition duration-150 ease-in-out`} />
+                            </button>
+                            <ul className={`${donutChartDropdownVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} shadow-md overflow-hidden text-ellipsis w-36 transition duration-150 ease-in-out absolute left-0 top-10 backdrop-blur-md bg-orange-600 bg-opacity-20 flex flex-col justify-center items-center rounded-xl gap-2 py-4 px-2`}>
+                                <li
+                                    className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-600 bg-opacity-0 hover:bg-opacity-10 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
+                                    onClick={() => { setOperationType(1); setDonutChartDropdownVisible(false) }}>
+                                    Expenses
+                                </li>
+                                <li
+                                    className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-600 bg-opacity-0 hover:bg-opacity-10 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
+                                    onClick={() => { setOperationType(2); setDonutChartDropdownVisible(false) }}>
+                                    Incomes
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className='h-[90%] w-[90%]'>
+                        <TransactionDistribution transactions={transactions} transactionCategories={transactionCategories.filter(category => category.operationTypeId === operationType)} operationType={operationType} />
+                    </div>
                 </div>
 
-                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-6 py-4 col-span-4 row-span-4 flex flex-col gap-4'>
+                {/* <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-2 col-span-3 row-span-3'>
+                    Incomes Vs Expenses
+                    <IncomesVsExpensesPlot transactions={transactions} />
+                </div> */}
+
+                <div className='h-full w-full shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-6 py-4 col-span-6 row-span-4 flex flex-col gap-4'>
                     <div className='w-full flex flex-row justify-between items-center'>
-                        <p className='text-lg font-semibold'>Transactions over time</p>
+                        <h1 className='font-bold text-lg text-opacity-90'>Transactions over time</h1>
 
                         <div className='relative'>
                             <button className='flex flex-row justify-center items-center w-32 bg-orange-600 hover:bg-opacity-30 transition duration-200 ease-in-out shadow-md bg-opacity-20 cursor-pointer rounded-md pl-6 pr-4 pt-1 pb-1 gap-2' onClick={() => setLineChartDropdownVisible(!lineChartDropdownVisible)}>
@@ -205,38 +241,6 @@ const Home = () => {
                     </div>
                     <div className='w-full h-[90%]'>
                         <IncomesExpensesOverTime transactions={transactions} startDate={startDate} endDate={endDate} dataType={linechartDataType} />
-                    </div>
-                </div>
-
-                <div className='h-full w-full flex flex-col items-center shadow-md bg-white bg-opacity-10 rounded-md text-black text-opacity-50 px-4 py-4 col-span-2 row-span-4 gap-2'>
-                    <div className='flex flex-row w-full justify-between'>
-                        <p>{operationType === 1 ? 'Expenses' : 'Incomes'} distribution</p>
-
-                        <div className='relative'>
-                            <button className='flex flex-row justify-center items-center w-36 bg-orange-600 hover:bg-opacity-30 transition duration-200 ease-in-out shadow-md bg-opacity-20 cursor-pointer rounded-md pl-6 pr-4 pt-1 pb-1 gap-2' onClick={() => setDonutChartDropdownVisible(!donutChartDropdownVisible)}>
-                                <span className='overflow-hidden truncate'>{operationType === 1 ? 'Expenses' : 'Incomes'}</span>
-                                <BiChevronDown className={`${donutChartDropdownVisible ? '-rotate-180' : ''} transition duration-150 ease-in-out`} />
-                            </button>
-                            <ul className={`${donutChartDropdownVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} shadow-md overflow-hidden text-ellipsis w-36 transition duration-150 ease-in-out absolute left-0 top-10 backdrop-blur-md bg-orange-600 bg-opacity-20 flex flex-col justify-center items-center rounded-xl gap-2 py-4 px-2`}>
-                                <li
-                                    className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-600 bg-opacity-0 hover:bg-opacity-10 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
-                                    onClick={() => { setOperationType(1); setDonutChartDropdownVisible(false) }}>
-                                    Expenses
-                                </li>
-                                <li
-                                    className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-600 bg-opacity-0 hover:bg-opacity-10 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
-                                    onClick={() => { setOperationType(2); setDonutChartDropdownVisible(false) }}>
-                                    Incomes
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* <button className='bg-orange-600 bg-opacity-20 transition duration-200 ease-in-out shadow-sm hover:bg-opacity-30 text-black text-opacity-50 text-xl px-2 py-1 rounded-md' onClick={(e) => operationType === 1 ? setOperationType(2) : setOperationType(1)}>
-                            {operationType === 1 ? <HiOutlineArrowTrendingUp /> : <HiOutlineArrowTrendingDown />}
-                        </button> */}
-                    </div>
-                    <div className='h-[90%] w-[90%]'>
-                        <TransactionDistribution transactions={transactions} transactionCategories={transactionCategories.filter(category => category.operationTypeId === operationType)} operationType={operationType} />
                     </div>
                 </div>
 

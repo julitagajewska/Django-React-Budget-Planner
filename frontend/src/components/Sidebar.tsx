@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useContext } from 'react'
+import React, { PropsWithChildren, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthContext, AuthContextType } from '../context/AuthContext';
 import SidebarLink from './ui/SidebarLink';
@@ -14,7 +14,7 @@ const Sidebar = ({ children }: PropsWithChildren) => {
 
     return (
         // <div className='bg-sky-700 fixed top-0 left-0 h-screen w-60 flex flex-col justify-between px-10 py-10'>
-        <div className='bg-orange-900 bg-opacity-30 shadow-xl h-screen w-60 flex flex-col justify-between px-10 py-10'>
+        <div className='bg-orange-700 bg-opacity-30 shadow-xl h-screen w-60 flex flex-col justify-between px-10 py-8'>
             <div>
                 <Link to="../home" className='text-white font-medium'>BudgetPlanner</Link>
             </div>
@@ -27,7 +27,7 @@ const Sidebar = ({ children }: PropsWithChildren) => {
             </div>
 
             <div className='flex flex-col items-start'>
-                <button onClick={() => logout()} className='flex flex-row gap-4 items-center w-full text-white text-opacity-50 hover:text-opacity-100 transition duration ease-in-out'><BiLogOut />Log out</button>
+                <button onClick={() => logout()} className='flex flex-row gap-4 items-center w-full text-white text-opacity-75 hover:text-opacity-100 transition duration ease-in-out'><BiLogOut />Log out</button>
             </div>
         </div>
     )
