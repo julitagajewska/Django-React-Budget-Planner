@@ -5,6 +5,7 @@ import './index.css';
 
 import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext';
+import { SidebarLinkProvider } from './context/SidebarLinkContext';
 
 
 const root = ReactDOM.createRoot(
@@ -14,7 +15,9 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        <SidebarLinkProvider>
+          <App />
+        </SidebarLinkProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
