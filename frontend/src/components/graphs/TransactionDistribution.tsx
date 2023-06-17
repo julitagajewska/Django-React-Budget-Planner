@@ -72,7 +72,6 @@ const TransactionDistribution = ({ transactions, transactionCategories, operatio
 
     // Get categories' names
 
-    console.log(transactionCategories)
     const categoryNames = transactionCategories.map(category => category.name);
 
     // Calculate the data and pass it to the child component
@@ -138,10 +137,6 @@ const TransactionDistribution = ({ transactions, transactionCategories, operatio
 
         return colorsWithOpacity
     }
-
-    console.log(setOppacity(COLORS, 0.5))
-
-    // console.log(COLORS)
 
     // Chart setup
     ChartJS.register(ArcElement, Tooltip, Legend);

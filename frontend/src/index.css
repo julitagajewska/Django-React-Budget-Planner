@@ -109,4 +109,20 @@
     .y-grid {
         color: transparent;
     }
+
+    ::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+    }
+
+    .datePicker {
+        @apply bg-orange-600 bg-opacity-20 transition duration-200 ease-in-out shadow-md px-3 py-1 rounded-md cursor-pointer
+    }
+
+    .datePicker:focus {
+        @apply bg-orange-600 bg-opacity-30 outline-none
+    }
+
+    .datePicker:hover {
+        @apply bg-orange-600 bg-opacity-30
+    }
 }
