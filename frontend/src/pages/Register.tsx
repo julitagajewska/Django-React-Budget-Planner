@@ -59,9 +59,9 @@ const Register = () => {
             <PageContainer>
                 <ContentCentered>
                     <FormContainer>
-                        <div className='flex flex-col justify-center items-center'>
-                            <h1 className='text-lg font-semibold'>Welcome</h1>
-                            <h3 className='text-sm font-normal'>Let's do some budgeting</h3>
+                        <div className='flex flex-col justify-center items-center text-white'>
+                            <h1 className='text-lg font-normal'>Welcome</h1>
+                            <h3 className='text-sm font-thin opacity-75'>Let's do some budgeting</h3>
                         </div>
 
                         <FormInput type="text" placeholder="Username" icon={<FaUser />} onChange={setUsername} />
@@ -70,11 +70,11 @@ const Register = () => {
                         <FormInput type="password" placeholder="Confirm password" icon={<FaLock />} onChange={setConfirmPassword} />
 
                         <div>
-                            <button className='px-8 py-1 bg-slate-600 rounded-full text-white'>Register</button>
+                            <button className='px-10 py-1 bg-white bg-opacity-20 shadow-md hover:bg-blue-500 hover:bg-opacity-80 transition duration-200 ease-in-out rounded-full text-white'>Register</button>
                         </div>
-                        <div className='text-sm'>
+                        <div className='text-sm text-white font-thin'>
                             <span>Already have an account?</span>
-                            <Link to='login' className='underline pl-2'>Log in</Link>
+                            <Link to='../login' className='underline pl-2'>Log in</Link>
                         </div>
                     </FormContainer>
                 </ContentCentered>

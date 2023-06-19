@@ -1,5 +1,7 @@
+import json
 from django.shortcuts import render
 # from django.http import JsonResponse
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -7,8 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 # from .models import Transaction
 # from .serializers import TransactionSerializer
 
-from .serializers import TransactionCategoriesSerializer, TransactionsSerializer, WalletsSerializer
-from users.models import Wallet, TransactionCategory
+from .serializers import TransactionCategoriesSerializer, TransactionSerializer, UserSerializer, WalletsSerializer
+from users.models import CustomUser, Wallet, TransactionCategory, Transaction, OperationType
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -42,6 +44,71 @@ def getRoutes(request):
 
 # Views for retreiving database data
 
+# TODO
+# Edit user
+# Delete user
+
+# TRANSACTIONS
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def createTransaction(request):
+    data = request.data
+    wallet = Wallet.objects.get(id=data['walletID'])
+    operationType = OperationType.objects.get(id=data['operationTypeID'])
+    category = TransactionCategory.objects.get(id=data['categoryID'])
+    transaction = Transaction.objects.create(
+        name=data['name'],
+        value=data['value'],
+        description=data['description'],
+        recipient=data['recipient'],
+        date=data['date'],
+        wallet=wallet,
+        operationType=operationType,
+        category=category
+    )
+
+    transaction.save()
+
+    serializer = TransactionSerializer(transaction, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def editTransaction(request, pk):
+    data = request.data
+    transaction = Transaction.objects.get(id=pk)
+
+    wallet = Wallet.objects.get(id=data['walletID'])
+    operationType = OperationType.objects.get(id=data['operationTypeID'])
+    category = TransactionCategory.objects.get(id=data['categoryID'])
+
+    transaction.name = data['name']
+    transaction.value = data['value']
+    transaction.description = data['description']
+    transaction.recipient = data['recipient']
+    transaction.date = data['date']
+    transaction.wallet = wallet
+    transaction.operationType = operationType
+    transaction.category = category
+
+    transaction.save()
+
+    serializer = TransactionSerializer(transaction, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def deleteTransaction(request, pk):
+    transaction = Transaction.objects.get(id=pk)
+    transaction.delete()
+    return Response('Transaction deleted')
+
+# WALLETS
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -57,7 +124,7 @@ def getUsersWallets(request):
 def getWalletsTransactions(request, pk):
     wallet = Wallet.objects.get(id=pk)
     transactions = wallet.transaction_set.all()
-    serializer = TransactionsSerializer(transactions, many=True)
+    serializer = TransactionSerializer(transactions, many=True)
     return Response(serializer.data)
 
 
@@ -69,6 +136,17 @@ def getWalletsTransactionCategories(request, pk):
     serializer = TransactionCategoriesSerializer(
         transactionCategories, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getUser(request, username):
+    user = CustomUser.objects.get(username=username)
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+# Categories
 
 # @api_view(['GET'])
 # @permission_classes([IsAuthenticated])

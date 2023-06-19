@@ -6,7 +6,7 @@ type FormContainerProps = {
 
 const FormContainer = (props: PropsWithChildren<FormContainerProps>) => {
     return (
-        <div className='w-fit h-fit flex flex-col items-center gap-6 px-6 py-8 bg-slate-300'>
+        <div className='form-container w-fit h-fit flex flex-col items-center gap-6 px-8 py-8 bg-opacity-25 rounded-2xl shadow-xl'>
             {props.children}
         </div>
     )

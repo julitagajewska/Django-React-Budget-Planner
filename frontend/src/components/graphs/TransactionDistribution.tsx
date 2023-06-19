@@ -93,11 +93,11 @@ const TransactionDistribution = ({ transactions, transactionCategories, operatio
     });
 
     // Generate chart colors
-    const colorScale = operationType === 1 ? d3.interpolateYlOrRd : d3.interpolateYlGnBu;
+    const colorScale = operationType === 1 ? d3.interpolateYlOrRd : d3.interpolateGreens;
 
     const colorRangeInfo: colorRangeInfoType = {
-        colorStart: 0.2,
-        colorEnd: 0.75,
+        colorStart: 0.4,
+        colorEnd: 0.9,
         useEndAsStart: false,
     };
 
@@ -161,6 +161,20 @@ const TransactionDistribution = ({ transactions, transactionCategories, operatio
             legend: {
                 position: 'right' as const,
             },
+            hoverLabel: {
+                id: 'hoverLabel',
+                afterDraw(chart: any, args: any, options: any) {
+                    const { ctx, chartArea: {
+                        left, right, top, bottom, width, height
+                    } } = chart;
+
+                    ctx.save();
+
+                    ctx.font = 'bolder 60px Arial';
+                    ctx.fillStyle = 'blue';
+                    ctx.fillText('Test', width / 2, height / 2)
+                }
+            }
         },
         elements: {
             arc: {

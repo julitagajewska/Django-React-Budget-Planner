@@ -1,5 +1,35 @@
-import { TransactionCategoryType, TransactionType } from "../data/types/Index";
+import moment from "moment";
+import { NewTransactionType, TransactionCategoryType, TransactionType, UserType } from "../data/types/Index";
 
+// User
+export const getUserByUsername = async (accessToken: string | null, username: string | null,  handleError: () => void) => {
+    const response = await fetch(`http://127.0.0.1:8000/api/user/${username}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken
+        }
+    })
+
+    if(response.status === 200) {
+        const responseJSON = await response.json();
+
+        let user: UserType = {
+            username: responseJSON.username,
+            email: responseJSON.email,
+            imageSrc: responseJSON.profile_picture
+        }
+
+        return user;
+    }
+
+    if(response.statusText === 'Unauthorized') {
+        handleError();
+    }
+}
+
+
+// Wallets
 export const getUsersWallets = async (accessToken: string | null, handleError: () => void) => {
     const response = await fetch('http://127.0.0.1:8000/api/wallets/', {
         method: 'GET',
@@ -20,7 +50,10 @@ export const getUsersWallets = async (accessToken: string | null, handleError: (
     }
 }
 
-export const getWalletsTransactions = async (accessToken: string | null, id: number, handleError: () => void) => {
+export const getWalletsTransactions = async (accessToken: string | null, id: number | undefined, handleError: () => void) => {
+
+    if(id === undefined) return
+
     const response = await fetch(`http://127.0.0.1:8000/api/wallet/transactions/${id}`, {
         method: 'GET',
         headers: {
@@ -112,6 +145,74 @@ export const getWalletsCategories = async (accessToken: string | null, id: numbe
         // })
         // return transactionsArray
 
+        return responseJSON
+    }
+
+    if(response.statusText === 'Unauthorized') {
+        handleError();
+    }
+}
+
+// Transactions
+export const createTransaction = async(accessToken: string | null, handleError: () => void) => {
+
+    var transaction: NewTransactionType = {
+        name: 'test transaction',
+        recipient: 'test',
+        value: '250.00',
+        description: 'test description',
+        date: moment().toDate(),
+        walletID: 1,
+        categoryID: 2,
+        operationTypeID: 1
+    }
+
+    const response = await fetch(`http://127.0.0.1:8000/api/transactions/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken
+        },
+        body: JSON.stringify(transaction)
+    })
+
+    const responseJSON = await response.json();
+
+    return responseJSON
+}
+
+export const editTransaction = async(accessToken: string | null, transaction: TransactionType, handleError: () => void) => {
+
+    const response = await fetch(`http://127.0.0.1:8000/api/transactions/edit/${transaction.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken
+        },
+        body: JSON.stringify(transaction)
+    })
+
+    if(response.status === 200) {
+        const responseJSON = await response.json();
+        return responseJSON
+    }
+
+    if(response.statusText === 'Unauthorized') {
+        handleError();
+    }
+}
+
+export const deleteTransaction = async(accessToken: string | null, id: number, handleError: () => void) => {
+        const response = await fetch(`http://127.0.0.1:8000/api/transactions/delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken
+        },
+    })
+
+    if(response.status === 200) {
+        const responseJSON = await response.json();
         return responseJSON
     }
 
