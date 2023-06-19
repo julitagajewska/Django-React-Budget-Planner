@@ -1,4 +1,4 @@
-import React, { FormEvent, PropsWithChildren, createContext, useEffect, useState } from "react";
+import React, { Dispatch, FormEvent, PropsWithChildren, SetStateAction, createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import jwt_decode, { JwtPayload } from "jwt-decode";
 import Login from "../pages/Login";
@@ -10,7 +10,10 @@ export type AuthContextType = {
     user: UserType,
     setUsername: (user: UserType) => void,
     loginUser: (e: FormEvent<HTMLFormElement>, userame: string, password: string) => void, // Safety issue?
-    logout: () => void
+    logout: () => void,
+    errorMessage: string,
+    setErrorMessage: Dispatch<SetStateAction<string>>,
+    registerErrorMessages: RegisterErrorMessagesType
 }
 
 export type AuthTokensType = {
@@ -31,11 +34,31 @@ export type JWTResponseType = {
     username: string
 }
 
+export type RegisterErrorMessagesType = {
+    generalError: string,
+    usernameError: string,
+    emailError: string,
+    passwordError: string,
+    confirmPasswordError: string
+}
+
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
 
     const navigate = useNavigate();
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+
+    let registerErrorMessagesBase: RegisterErrorMessagesType = {
+        generalError: '',
+        usernameError: '',
+        emailError: '',
+        passwordError: '',
+        confirmPasswordError: ''
+    }
+
+    const [registerErrorMessages, setRegisterErrorMessages] = useState<RegisterErrorMessagesType>(registerErrorMessagesBase)
 
     const [authTokens, setAuthTokens] = useState<AuthTokensType>(() =>
         localStorage.getItem('accessToken') ? {
@@ -88,7 +111,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
             navigate('home');
 
         } else {
-            console.log(response)
+            setErrorMessage('You entered incorrect username or password');
         }
     }
 
@@ -165,7 +188,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }, [authTokens, loading])
 
     return (
-        <AuthContext.Provider value={{ authTokens, setAuthTokens, user, setUsername, loginUser, logout }}>
+        <AuthContext.Provider value={{ authTokens, setAuthTokens, user, setUsername, loginUser, logout, errorMessage, setErrorMessage, registerErrorMessages }}>
             {loading ? <Loading /> : children}
         </AuthContext.Provider>
     );

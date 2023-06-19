@@ -28,6 +28,15 @@
         /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     }
 
+    .overlay-container {
+        background: #FFAFBD;
+        /* fallback for old browsers */
+        background: -webkit-linear-gradient(220deg, rgba(255, 195, 160, 0.8), rgba(255, 175, 189, 0.8));
+        /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(45deg, rgba(255, 195, 160, 0.75), rgba(255, 175, 189, 0.75));
+        /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    }
+
     .blob {
         position: fixed;
         z-index: -2;
@@ -114,8 +123,9 @@
         cursor: pointer;
     }
 
+    /* DATE PICKER */
     .datePicker {
-        @apply bg-orange-600 bg-opacity-20 transition duration-200 ease-in-out shadow-md px-3 py-1 rounded-md cursor-pointer
+        @apply bg-orange-600 bg-opacity-20 transition duration-200 ease-in-out shadow-md px-4 py-1 rounded-md cursor-pointer
     }
 
     .datePicker:focus {
@@ -124,5 +134,58 @@
 
     .datePicker:hover {
         @apply bg-orange-600 bg-opacity-30
+    }
+
+    /* DATE PICKER LIGHT */
+    .datePickerLight {
+        @apply bg-orange-100 bg-opacity-20 transition duration-200 ease-in-out shadow-md px-4 py-1 rounded-md cursor-pointer
+    }
+
+    .datePickerLight:focus {
+        @apply bg-orange-100 bg-opacity-30 outline-none
+    }
+
+    .datePickerLight:hover {
+        @apply bg-orange-100 bg-opacity-30
+    }
+
+    /* TEXT INPUT */
+    .text-input {
+        @apply bg-orange-100 bg-opacity-20 transition duration-200 ease-in-out shadow-md px-4 py-1 rounded-md cursor-pointer text-sm
+    }
+
+    .text-input:focus {
+        @apply bg-orange-100 bg-opacity-30 outline-none
+    }
+
+    .text-input:hover {
+        @apply bg-orange-100 bg-opacity-30
+    }
+
+    /* TESTAREA INPUT */
+    .textarea-input {
+        @apply bg-orange-100 bg-opacity-20 transition duration-200 ease-in-out shadow-md px-4 py-1 rounded-md cursor-pointer text-sm w-full h-16 resize-none
+    }
+
+    .textarea-input:focus {
+        @apply bg-orange-100 bg-opacity-30 outline-none
+    }
+
+    .textarea-input:hover {
+        @apply bg-orange-100 bg-opacity-30
+    }
+
+    /* DROPDOWN */
+    .dropdown-background {
+        backdrop-filter: blur(400px);
+        background: linear-gradient(200deg, rgba(255, 195, 160, 0.75), rgba(255, 175, 189, 0.75));
+    }
+
+    .form-container {
+        background: #FFAFBD;
+        /* fallback for old browsers */
+        background: -webkit-linear-gradient(220deg, rgba(255, 195, 160, 0.8), rgba(255, 175, 189, 0.8));
+        /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(45deg, rgba(255, 185, 145, 0.25), rgba(238, 152, 166, 0.25));
     }
 }

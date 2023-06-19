@@ -55,7 +55,6 @@ const IncomesExpensesOverTime = ({ transactions, startDate, endDate, dataType }:
         }
     }
 
-
     // Split transactions into incomes and expenses
     var expenses: TransactionType[] = transactions.filter((transaction) => transaction.operationTypeID === 1);
     var incomes: TransactionType[] = transactions.filter((transaction) => transaction.operationTypeID === 2);
