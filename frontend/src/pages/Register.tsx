@@ -8,6 +8,8 @@ import FormInput from '../components/form/FormInput'
 import { FaUser, FaAt, FaLock, FaKey } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom'
 import axiosInstance from '../libs/axios'
+import { registerUser } from '../services'
+import { error } from 'console'
 
 const Register = () => {
 
@@ -22,33 +24,41 @@ const Register = () => {
     // const [formData, setFormData] = useState(initialFormData);
 
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confimrPassword, setConfirmPassword] = useState('');
+    const [usernameErrors, setUsernameErrors] = useState<string[]>();
 
-    // const [username, setUsername] = useState('');
-    // const [mail, setMail] = useState('');
-    // const [password, setPassword] = useState('');
-    // const [confirmPassword, setConfirmPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [emailErrors, setEmailErrors] = useState<string[]>();
+
+    const [password, setPassword] = useState('');
+    const [passwordErrors, setPasswordErrors] = useState<string[]>();
+
+    const [confimrPassword, setConfirmPassword] = useState('');
+    const [confirmPasswordErrors, setConfirmPasswordErrors] = useState<string[]>();
+
+    const [message, setMessage] = useState<string>();
 
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         // setFormData({...formData, [e.target.name]: e.target.value.trim()})
     }
 
-    const handleSubmit = (e: Event) => {
+    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
 
-        axiosInstance
-            .post('user/create/', {
-                email: email,
-                username: username,
-                password: password
-            })
-            .then((res) => {
-                navigate('login')
-                console.log(res);
-                console.log(res.data);
+        registerUser(username, email, password, confimrPassword)
+            .then((response) => {
+                if (response === "User registered successfully!") {
+                    setMessage("User registered successfully!")
+                    setUsernameErrors([''])
+                    setEmailErrors([''])
+                    setPasswordErrors([''])
+                    setConfirmPasswordErrors([''])
+                } else {
+                    setUsernameErrors(response['username'])
+                    setEmailErrors(response['email'])
+                    setPasswordErrors(response['password'])
+                    setConfirmPasswordErrors(response['password2'])
+                }
             })
     }
 
@@ -65,13 +75,23 @@ const Register = () => {
                         </div>
 
                         <FormInput type="text" placeholder="Username" icon={<FaUser />} onChange={setUsername} />
+                        {usernameErrors?.map((error) => <span className='text-red-700 text-sm font-bold w-60 text-center'>{error.charAt(0).toUpperCase() + error.slice(1)}</span>)}
+
                         <FormInput type="text" placeholder="E-mail" icon={<FaAt />} onChange={setEmail} />
+                        {emailErrors?.map((error) => <span className='text-red-700 text-sm font-bold w-60 text-center'>{error.charAt(0).toUpperCase() + error.slice(1)}</span>)}
+
                         <FormInput type="password" placeholder="Password" icon={<FaKey />} onChange={setPassword} />
+                        {passwordErrors?.map((error) => <span className='text-red-700 text-sm font-bold w-60 text-center'>{error.charAt(0).toUpperCase() + error.slice(1)}</span>)}
+
                         <FormInput type="password" placeholder="Confirm password" icon={<FaLock />} onChange={setConfirmPassword} />
+                        {confirmPasswordErrors?.map((error) => <span className='text-red-700 text-sm font-bold w-60 text-center'>{error.charAt(0).toUpperCase() + error.slice(1)}</span>)}
 
                         <div>
-                            <button className='px-10 py-1 bg-white bg-opacity-20 shadow-md hover:bg-blue-500 hover:bg-opacity-80 transition duration-200 ease-in-out rounded-full text-white'>Register</button>
+                            <button className='px-10 py-1 bg-white bg-opacity-20 shadow-md hover:bg-blue-500 hover:bg-opacity-80 transition duration-200 ease-in-out rounded-full text-white' onClick={(e) => handleSubmit(e)}>Register</button>
                         </div>
+
+                        <span className='text-[#438c1c] opacity-75 text-sm font-semibold w-60 text-center'>{message}</span>
+
                         <div className='text-sm text-white font-thin'>
                             <span>Already have an account?</span>
                             <Link to='../login' className='underline pl-2'>Log in</Link>

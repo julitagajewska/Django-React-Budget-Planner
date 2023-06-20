@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 # from .models import Transaction
 # from .serializers import TransactionSerializer
 
-from .serializers import TransactionCategoriesSerializer, TransactionSerializer, UserSerializer, WalletsSerializer
+from .serializers import TransactionCategoriesSerializer, TransactionSerializer, UserSerializer, WalletsSerializer, RegisterSerializer
 from users.models import CustomUser, Wallet, TransactionCategory, Transaction, OperationType
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -44,9 +44,23 @@ def getRoutes(request):
 
 # Views for retreiving database data
 
-# TODO
-# Edit user
-# Delete user
+# USERS
+
+
+@api_view(['POST'])
+def registerUser(request):
+    if request.method == 'POST':
+        serializer = RegisterSerializer(data=request.data)
+        data = {}
+        if serializer.is_valid():
+            account = serializer.save()
+            data['response'] = "Successfully registered a new user"
+            data['email'] = account.email
+            data['username'] = account.username
+            return Response(data)
+        else:
+            return Response(serializer.errors, status=400)
+
 
 # TRANSACTIONS
 

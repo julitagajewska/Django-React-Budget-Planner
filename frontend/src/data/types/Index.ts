@@ -4,6 +4,7 @@ import { CategoryType } from "./Category";
 import { TransactionCategoryType } from "./TransactionCategory";
 import { UserType } from "./UserType";
 import { NewTransactionType } from "./NewTransactionType";
+import { RegisterErrorTypes } from "./RegisterErrors";
 
 export type {
     TransactionType,
@@ -11,5 +12,6 @@ export type {
     CategoryType,
     TransactionCategoryType,
     UserType,
-    NewTransactionType
+    NewTransactionType,
+    RegisterErrorTypes
 }

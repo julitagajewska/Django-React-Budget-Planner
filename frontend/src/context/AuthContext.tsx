@@ -13,7 +13,8 @@ export type AuthContextType = {
     logout: () => void,
     errorMessage: string,
     setErrorMessage: Dispatch<SetStateAction<string>>,
-    registerErrorMessages: RegisterErrorMessagesType
+    registerErrorMessages: RegisterErrorMessagesType,
+    setRegisterErrorMessages: Dispatch<SetStateAction<RegisterErrorMessagesType>>
 }
 
 export type AuthTokensType = {
@@ -35,11 +36,10 @@ export type JWTResponseType = {
 }
 
 export type RegisterErrorMessagesType = {
-    generalError: string,
-    usernameError: string,
-    emailError: string,
-    passwordError: string,
-    confirmPasswordError: string
+    usernameError: string[],
+    emailError: string[],
+    passwordError: string[],
+    confirmPasswordError: string[]
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -51,11 +51,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const [errorMessage, setErrorMessage] = useState<string>('');
 
     let registerErrorMessagesBase: RegisterErrorMessagesType = {
-        generalError: '',
-        usernameError: '',
-        emailError: '',
-        passwordError: '',
-        confirmPasswordError: ''
+        usernameError: [''],
+        emailError: [''],
+        passwordError: [''],
+        confirmPasswordError: ['']
     }
 
     const [registerErrorMessages, setRegisterErrorMessages] = useState<RegisterErrorMessagesType>(registerErrorMessagesBase)
@@ -188,7 +187,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     }, [authTokens, loading])
 
     return (
-        <AuthContext.Provider value={{ authTokens, setAuthTokens, user, setUsername, loginUser, logout, errorMessage, setErrorMessage, registerErrorMessages }}>
+        <AuthContext.Provider value={{ authTokens, setAuthTokens, user, setUsername, loginUser, logout, errorMessage, setErrorMessage, registerErrorMessages, setRegisterErrorMessages }}>
             {loading ? <Loading /> : children}
         </AuthContext.Provider>
     );

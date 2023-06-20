@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('', views.getRoutes, name="routes"),
+    path('register', views.registerUser, name="register"),
     path('user/<str:username>', views.getUser),
     path('wallets/', views.getUsersWallets),
     path('wallet/transactions/<str:pk>', views.getWalletsTransactions),
