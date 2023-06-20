@@ -4,15 +4,17 @@ import { BiChevronDown, BiPlus } from 'react-icons/bi';
 import { RxCross2 } from 'react-icons/rx';
 import { NewTransactionType, TransactionCategoryType } from '../../data/types/Index';
 import TextInput from '../ui/inputs/TextInput';
+import ButtonWithChildren from '../ui/buttons/ButtonWithChildren';
 
 type CreateTransactionOverlayProps = {
     setOverlayVisibility: Dispatch<SetStateAction<boolean>>,
     categories: TransactionCategoryType[],
     handleCreateTransaction: (transaction: NewTransactionType) => void,
-    walletID: number | undefined
+    walletID: number | undefined,
+    setManageCategoriesOverlayVisibility: Dispatch<SetStateAction<boolean>>,
 }
 
-const CreateTransactionOverlay = ({ setOverlayVisibility, categories, handleCreateTransaction, walletID }: CreateTransactionOverlayProps) => {
+const CreateTransactionOverlay = ({ setOverlayVisibility, categories, handleCreateTransaction, walletID, setManageCategoriesOverlayVisibility }: CreateTransactionOverlayProps) => {
 
     // Name
     const [name, setName] = useState<string>('');
@@ -112,13 +114,13 @@ const CreateTransactionOverlay = ({ setOverlayVisibility, categories, handleCrea
 
                     <div className='flex flex-col justify-center items-start'>
                         <p className='opacity-50 text-sm'>Name</p>
-                        <TextInput value={name} onChange={setName} />
+                        <TextInput width='w-42' value={name} onChange={setName} />
                         {nameError !== '' ? <span className='text-red-800 text-sm'>{nameError}</span> : <></>}
                     </div>
 
                     <div className='flex flex-col justify-center items-start'>
                         <p className='opacity-50 text-sm'>Recipient</p>
-                        <TextInput value={recipient} onChange={setRecipient} />
+                        <TextInput width='w-42' value={recipient} onChange={setRecipient} />
                         {recipientError !== '' ? <span className='text-red-800 text-sm'>{recipientError}</span> : <></>}
                     </div>
 
@@ -157,45 +159,50 @@ const CreateTransactionOverlay = ({ setOverlayVisibility, categories, handleCrea
                         </div>
                     </div>
 
-                    <div className='flex flex-col justify-center items-start'>
-                        <p className='opacity-50 text-sm'>Category</p>
-                        <div className='relative'>
-                            <button className='flex flex-row justify-center items-center w-48 bg-orange-100 hover:bg-opacity-30 transition duration-200 ease-in-out shadow-md bg-opacity-20 cursor-pointer rounded-md pl-6 pr-4 pt-1 pb-1 gap-2' onClick={() => setCategoryDropdownVisible(!categoryDropdownVisible)}>
-                                <span className='overflow-hidden truncate'>{category !== undefined && operationTypeID === category.operationTypeId ? category.name : 'Select category ...'}</span>
-                                <BiChevronDown className={`${categoryDropdownVisible ? '-rotate-180' : ''} transition duration-150 ease-in-out`} />
-                            </button>
-                            {categoryError !== '' ? <span className='text-red-800 text-sm'>{categoryError}</span> : <></>}
-                            <ul className={`${categoryDropdownVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} dropdown-background shadow-md overflow-hidden text-ellipsis w-48 transition duration-150 ease-in-out absolute left-0 top-10 z-20 bg-opacity-30 flex flex-col justify-center items-center rounded-xl gap-2 py-2 px-2`}>
-                                <div className='absolute w-full h-full z-30 bg-white bg-opacity-10'></div>
+                    <div className='flex flex-row items-end gap-4'>
+                        <div className='flex flex-col'>
+                            <p className='opacity-50 text-sm'>Category</p>
+                            <div className='relative'>
+                                <button className='flex flex-row justify-center items-center w-48 bg-orange-100 hover:bg-opacity-30 transition duration-200 ease-in-out shadow-md bg-opacity-20 cursor-pointer rounded-md pl-6 pr-4 pt-1 pb-1 gap-2' onClick={() => setCategoryDropdownVisible(!categoryDropdownVisible)}>
+                                    <span className='overflow-hidden truncate'>{category !== undefined && operationTypeID === category.operationTypeId ? category.name : 'Select category ...'}</span>
+                                    <BiChevronDown className={`${categoryDropdownVisible ? '-rotate-180' : ''} transition duration-150 ease-in-out`} />
+                                </button>
+                                {categoryError !== '' ? <span className='text-red-800 text-sm'>{categoryError}</span> : <></>}
+                                <ul className={`${categoryDropdownVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} dropdown-background shadow-md overflow-hidden text-ellipsis w-48 transition duration-150 ease-in-out absolute left-0 top-10 z-20 bg-opacity-30 flex flex-col justify-center items-center rounded-xl gap-2 py-2 px-2`}>
+                                    <div className='absolute w-full h-full z-30 bg-white bg-opacity-10'></div>
 
-                                {operationTypeID === 1 ?
+                                    {operationTypeID === 1 ?
 
-                                    expenseCategories.map((element) =>
-                                        <li
-                                            className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
-                                            onClick={() => {
-                                                setCategoryID(element.id);
-                                                setCategoryDropdownVisible(false);
-                                            }}>
-                                            {element.name}
-                                        </li>)
+                                        expenseCategories.map((element) =>
+                                            <li
+                                                className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
+                                                onClick={() => {
+                                                    setCategoryID(element.id);
+                                                    setCategoryDropdownVisible(false);
+                                                }}>
+                                                {element.name}
+                                            </li>)
 
-                                    :
+                                        :
 
-                                    incomeCategories.map((element) =>
-                                        <li
-                                            className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
-                                            onClick={() => {
-                                                setCategoryID(element.id);
-                                                setCategoryDropdownVisible(false);
-                                            }}>
-                                            {element.name}
-                                        </li>)
+                                        incomeCategories.map((element) =>
+                                            <li
+                                                className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
+                                                onClick={() => {
+                                                    setCategoryID(element.id);
+                                                    setCategoryDropdownVisible(false);
+                                                }}>
+                                                {element.name}
+                                            </li>)
 
-                                }
+                                    }
 
-                            </ul>
+                                </ul>
+                            </div>
                         </div>
+                        <ButtonWithChildren onClick={() => setManageCategoriesOverlayVisibility(true)}>
+                            <BiPlus />
+                        </ButtonWithChildren>
                     </div>
 
                     <div className='flex flex-col justify-center items-start'>
@@ -218,14 +225,14 @@ const CreateTransactionOverlay = ({ setOverlayVisibility, categories, handleCrea
                         </div>
                     </div>
 
-                    <div className='flex flex-row justify-between items-end w-full'>
+                    <div className='flex flex-row justify-between items-end w-full gap-4'>
                         <div className='flex flex-col'>
                             <p className='opacity-50 text-sm'>Value</p>
                             <input type="number" value={value} onChange={(e) => setValue(e.target.value)} min={0} step='0.01' className='text-input' />
                             {valueError !== '' ? <span className='text-red-800 text-sm'>{valueError}</span> : <></>}
                         </div>
 
-                        <button onClick={(e) => handleCreate()} className='bg-orange-600 w-[8.75rem] text-black text-opacity-25 hover:text-opacity-50 bg-opacity-20 hover:bg-opacity-30 py-1 shadow-sm rounded-md transition duration-200 ease-in-out'>
+                        <button onClick={(e) => handleCreate()} className='bg-orange-600 w-36 text-black text-opacity-25 hover:text-opacity-50 bg-opacity-20 hover:bg-opacity-30 py-1 shadow-sm rounded-md transition duration-200 ease-in-out'>
                             Create
                         </button>
                     </div>

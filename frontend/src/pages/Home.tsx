@@ -7,20 +7,23 @@ import { WalletType } from '../context/WalletContext';
 import moment, { Moment } from 'moment';
 import { getExpenses, getIncomes, getRecentTransactionsArray, getTotalExpensesValue, getTotalIncomesValue } from '../utils/Index';
 import TransactionDistribution from '../components/graphs/TransactionDistribution';
-import { TransactionCategoryType, TransactionType, CategoryType, NewTransactionType } from '../data/types/Index';
+import { TransactionCategoryType, TransactionType, CategoryType, NewTransactionType, NewTransactionCategoryType } from '../data/types/Index';
 import { HiOutlineArrowTrendingDown, HiOutlineArrowTrendingUp } from 'react-icons/hi2';
 import IncomesExpensesOverTime from '../components/graphs/IncomesExpensesOverTime';
 import { SidebarLinkContext, SidebarLinkContextType } from '../context/SidebarLinkContext';
 import TransactionDetailsoverlay from '../components/overlays/TransactionDetailsoverlay';
-import { createTransaction, deleteTransaction, editTransaction, getWalletByID } from '../services/APIRequests';
+import { createCategory, createTransaction, deleteCategory, deleteTransaction, editCategory, editTransaction, getWalletByID } from '../services/APIRequests';
 import DeleteTransactionOverlay from '../components/overlays/DeleteTransactionOverlay';
 import CreateTransactionOverlay from '../components/overlays/CreateTransactionOverlay';
 import EditTransactionOverlay from '../components/overlays/EditTransactionOverlay';
+import ManageCategoriesOverlay from '../components/overlays/ManageCategoriesOverlay';
+import { ErrorMessagesContext, ErrorMessagesContextType } from '../context/ErrorMessages';
 
 const Home = () => {
 
     // Sidebar active link context
     const { active, setActive } = useContext(SidebarLinkContext) as SidebarLinkContextType;
+    const { categoryError, setCategoryError } = useContext(ErrorMessagesContext) as ErrorMessagesContextType;
     setActive("Dashboard");
 
     // User context
@@ -86,7 +89,7 @@ const Home = () => {
     const [isEditTransactionOverlayVisibile, setIsEditTransactionOverlayVisibile] = useState<boolean>(false);
 
     // Edit transaction overlay
-    const [isManageCategoriesOverlayVisibile, setIsManageCategoriesOverlayVisibile] = useState<boolean>(false);
+    const [isManageCategoriesOverlayVisibile, setIsManageCategoriesOverlayVisibile] = useState<boolean>(true);
 
     useEffect(() => {
         getUsersWallets(authTokens.accessToken, logout)
@@ -119,6 +122,7 @@ const Home = () => {
             getWalletsTransactionCategories(authTokens.accessToken, selectedWallet.id, logout)
                 .then((response) => {
                     setTransactionCategories(response);
+                    console.log(response)
                 })
         }
 
@@ -168,6 +172,47 @@ const Home = () => {
             setIsDeleteTransactionOverlayVisibile(false);
             updateTransactions();
         })
+    }
+
+    const handleCategoryCreate = (category: NewTransactionCategoryType) => {
+        createCategory(authTokens.accessToken, category, logout)
+            .then((response) => {
+                if (selectedWallet !== undefined)
+                    getWalletsTransactionCategories(authTokens.accessToken, selectedWallet.id, logout)
+                        .then((response) => {
+                            setTransactionCategories(response);
+                            console.log(transactionCategories)
+                        })
+            })
+    }
+
+    const handleCategoryEdit = async (category: TransactionCategoryType) => {
+        editCategory(authTokens.accessToken, category, logout)
+            .then((response) => {
+                if (response === "Category already exists") {
+                    setCategoryError("Category already exists")
+                    return
+                }
+
+                setCategoryError("Success")
+                if (selectedWallet !== undefined)
+                    getWalletsTransactionCategories(authTokens.accessToken, selectedWallet.id, logout)
+                        .then((response) => {
+                            setTransactionCategories(response);
+                            console.log(transactionCategories)
+                        })
+            })
+    }
+
+    const handleCategoryDelete = (id: number) => {
+        deleteCategory(authTokens.accessToken, id, logout)
+            .then((response) => {
+                if (selectedWallet !== undefined)
+                    getWalletsTransactionCategories(authTokens.accessToken, selectedWallet.id, logout)
+                        .then((response) => {
+                            setTransactionCategories(response);
+                        })
+            })
     }
 
     return (
@@ -355,6 +400,7 @@ const Home = () => {
 
                 {isCreateTransactionOverlayVisibile ?
                     <CreateTransactionOverlay
+                        setManageCategoriesOverlayVisibility={setIsManageCategoriesOverlayVisibile}
                         setOverlayVisibility={setIsCreateTransactionOverlayVisibile}
                         categories={transactionCategories}
                         handleCreateTransaction={handleCreateTransaction}
@@ -366,6 +412,7 @@ const Home = () => {
 
                 {isEditTransactionOverlayVisibile ?
                     <EditTransactionOverlay
+                        setManageCategoriesOverlayVisibility={setIsManageCategoriesOverlayVisibile}
                         categories={transactionCategories}
                         setVisibility={setIsEditTransactionOverlayVisibile}
                         setDetailsOverlayVisibility={setIsTransactionDetailsOverlayVisible}
@@ -376,12 +423,13 @@ const Home = () => {
                 }
 
                 {isManageCategoriesOverlayVisibile ?
-                    <EditTransactionOverlay
+                    <ManageCategoriesOverlay
+                        selectedWallet={selectedWallet}
+                        handleCategoryCreate={handleCategoryCreate}
+                        handleCategoryEdit={handleCategoryEdit}
+                        handleCategoryDelete={handleCategoryDelete}
                         categories={transactionCategories}
-                        setVisibility={setIsEditTransactionOverlayVisibile}
-                        setDetailsOverlayVisibility={setIsTransactionDetailsOverlayVisible}
-                        handleEdit={handleEditTransaction}
-                        transaction={selectedTransaction} />
+                        setVisibility={setIsManageCategoriesOverlayVisibile} />
                     :
                     <></>
                 }

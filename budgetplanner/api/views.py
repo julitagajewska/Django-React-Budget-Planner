@@ -197,6 +197,52 @@ def getUser(request, username):
 
 
 # Categories
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def createCategory(request):
+    data = request.data
+    wallet = Wallet.objects.get(id=data['wallet'])
+    operationType = OperationType.objects.get(id=data['operationType'])
+    transaction = TransactionCategory.objects.create(
+        name=data['name'],
+        wallet=wallet,
+        operationType=operationType,
+    )
+
+    wallet.save()
+    transaction.save()
+
+    serializer = TransactionCategoriesSerializer(transaction, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+# @permission_classes([IsAuthenticated])
+def editCategory(request, pk):
+    data = request.data
+    category = TransactionCategory.objects.get(id=pk)
+
+    wallet = Wallet.objects.get(id=data['wallet'])
+    operationType = OperationType.objects.get(id=data['operationType'])
+
+    category.name = data['name']
+    category.wallet = wallet
+    category.operationType = operationType
+
+    category.save()
+    wallet.save()
+
+    serializer = TransactionCategoriesSerializer(category, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def deleteCategory(request, pk):
+    category = TransactionCategory.objects.get(id=pk)
+    category.delete()
+    return Response('Category deleted')
+
 
 # @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
