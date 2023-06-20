@@ -12,6 +12,7 @@ urlpatterns = [
     path('register', views.registerUser, name="register"),
     path('user/<str:username>', views.getUser),
     path('wallets/', views.getUsersWallets),
+    path('wallets/<str:pk>', views.getWalletById),
     path('wallet/transactions/<str:pk>', views.getWalletsTransactions),
     path('wallet/transaction_categories/<str:pk>',
          views.getWalletsTransactionCategories),

@@ -64,22 +64,8 @@ class RegisterSerializer(ModelSerializer):
             email=self.validated_data['email']
         )
         password = self.validated_data['password']
-        # password2 = self.validated_data['password2']
-
-        # if password != password2:
-        #     raise ValidationError({'password': 'Passwords must match'})
-
-        # try:
-        #     validate_password(
-        #         password=self.validated_data['password'], user=account)
-        # except ValidationError as err:
-        #     raise ValidationError({'password': err.messages})
 
         account.set_password(password)
+
         account.save()
         return account
-
-# class CategorySerializer(ModelSerializer):
-#     class Meta:
-#         model = Category
-#         fields = '__all__'

@@ -7,12 +7,12 @@ import { WalletType } from '../context/WalletContext';
 import moment, { Moment } from 'moment';
 import { getExpenses, getIncomes, getRecentTransactionsArray, getTotalExpensesValue, getTotalIncomesValue } from '../utils/Index';
 import TransactionDistribution from '../components/graphs/TransactionDistribution';
-import { TransactionCategoryType, TransactionType, CategoryType } from '../data/types/Index';
+import { TransactionCategoryType, TransactionType, CategoryType, NewTransactionType } from '../data/types/Index';
 import { HiOutlineArrowTrendingDown, HiOutlineArrowTrendingUp } from 'react-icons/hi2';
 import IncomesExpensesOverTime from '../components/graphs/IncomesExpensesOverTime';
 import { SidebarLinkContext, SidebarLinkContextType } from '../context/SidebarLinkContext';
 import TransactionDetailsoverlay from '../components/overlays/TransactionDetailsoverlay';
-import { createTransaction, deleteTransaction, editTransaction } from '../services/APIRequests';
+import { createTransaction, deleteTransaction, editTransaction, getWalletByID } from '../services/APIRequests';
 import DeleteTransactionOverlay from '../components/overlays/DeleteTransactionOverlay';
 import CreateTransactionOverlay from '../components/overlays/CreateTransactionOverlay';
 import EditTransactionOverlay from '../components/overlays/EditTransactionOverlay';
@@ -127,23 +127,36 @@ const Home = () => {
 
     const updateTransactions = () => {
         if (selectedWallet !== undefined)
-            getWalletsTransactions(authTokens.accessToken, selectedWallet.id, logout)
+            getUsersWallets(authTokens.accessToken, logout)
                 .then((response) => {
-                    setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
-                    setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
-                    setTransactions(response)
-                    setRecentTransactions(getRecentTransactionsArray(response));
+                    setWallets(response);
+
+                    if (response[0] !== undefined) {
+                        setSelectedWallet(response[0])
+
+                        getWalletsTransactions(authTokens.accessToken, response[0].id, logout)
+                            .then((response) => {
+                                setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
+                                setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
+                                setTransactions(response)
+                                setRecentTransactions(getRecentTransactionsArray(response));
+                            })
+                    }
                 })
     }
 
-    const handleCreateTransaction = () => {
-        createTransaction(authTokens.accessToken, logout).then((response) => console.log(response));
-        updateTransactions();
+    const handleCreateTransaction = (transaction: NewTransactionType) => {
+        createTransaction(authTokens.accessToken, transaction, logout).then((response) => {
+            updateTransactions();
+        });
     }
 
     const handleEditTransaction = (transaction: TransactionType) => {
         editTransaction(authTokens.accessToken, transaction, logout).then((response) => {
             setSelectedTransaction(transaction);
+            getWalletByID(authTokens.accessToken, selectedWallet?.id, logout).then((response) => {
+                console.log(response)
+            })
             updateTransactions();
         })
     }
@@ -343,7 +356,9 @@ const Home = () => {
                 {isCreateTransactionOverlayVisibile ?
                     <CreateTransactionOverlay
                         setOverlayVisibility={setIsCreateTransactionOverlayVisibile}
-                        categories={transactionCategories} />
+                        categories={transactionCategories}
+                        handleCreateTransaction={handleCreateTransaction}
+                        walletID={selectedWallet?.id} />
 
                     :
                     <></>

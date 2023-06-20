@@ -1,4 +1,4 @@
-import { getUserByUsername, getUsersWallets, getWalletsTransactions, getWalletsTransactionCategories, getWalletsCategories, deleteTransaction, editTransaction, registerUser } from "./APIRequests";
+import { getUserByUsername, getUsersWallets, getWalletsTransactions, getWalletsTransactionCategories, getWalletsCategories, deleteTransaction, editTransaction, registerUser, getWalletByID } from "./APIRequests";
 
 export {
     getUserByUsername,
@@ -8,5 +8,6 @@ export {
     getWalletsCategories,
     editTransaction,
     deleteTransaction,
-    registerUser
+    registerUser,
+    getWalletByID
 }

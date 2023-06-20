@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from decimal import Decimal
 
 # from .models import Transaction
 # from .serializers import TransactionSerializer
@@ -83,6 +84,14 @@ def createTransaction(request):
         category=category
     )
 
+    if (operationType.id == 1):
+        wallet.balance = wallet.balance - \
+            Decimal(transaction.value.replace(',', '.'))
+    else:
+        wallet.balance = wallet.balance + \
+            Decimal(transaction.value.replace(',', '.'))
+
+    wallet.save()
     transaction.save()
 
     serializer = TransactionSerializer(transaction, many=False)
@@ -109,6 +118,14 @@ def editTransaction(request, pk):
     transaction.category = category
 
     transaction.save()
+    if (operationType.id == 1):
+        wallet.balance = wallet.balance - \
+            Decimal(transaction.value.replace(',', '.'))
+    else:
+        wallet.balance = wallet.balance + \
+            Decimal(transaction.value.replace(',', '.'))
+
+    wallet.save()
 
     serializer = TransactionSerializer(transaction, many=False)
     return Response(serializer.data)
@@ -117,7 +134,17 @@ def editTransaction(request, pk):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def deleteTransaction(request, pk):
+
     transaction = Transaction.objects.get(id=pk)
+    wallet = Wallet.objects.get(id=transaction.wallet.id)
+    print(wallet)
+
+    if (transaction.operationType.id == 1):
+        wallet.balance = wallet.balance + transaction.value
+    else:
+        wallet.balance = wallet.balance - transaction.value
+
+    wallet.save()
     transaction.delete()
     return Response('Transaction deleted')
 
@@ -130,6 +157,15 @@ def getUsersWallets(request):
     user = request.user
     wallets = user.wallet_set.all()
     serializer = WalletsSerializer(wallets, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getWalletById(request, pk):
+    user = request.user
+    wallets = user.wallet_set.all().get(id=pk)
+    serializer = WalletsSerializer(wallets, many=False)
     return Response(serializer.data)
 
 

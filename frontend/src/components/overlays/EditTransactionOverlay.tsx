@@ -71,7 +71,7 @@ const EditTransactionOverlay = ({ categories, transaction, setVisibility, setDet
         }
         setCategoryError('')
 
-        var regex = new RegExp("^[a-zA-Z0-9]+$");
+        var regex = new RegExp("^\\d+(\\.\\d{2})?$");
         if (!regex.test(value)) {
             setValueError('Enter correct value')
             return
@@ -243,7 +243,7 @@ const EditTransactionOverlay = ({ categories, transaction, setVisibility, setDet
 
                 <div className='flex flex-col justify-center items-start'>
                     <p className='opacity-50 text-sm'>Value</p>
-                    <input type="number" value={value} onChange={(e) => setValue(e.target.value)} min={0} className='text-input' />
+                    <input type="number" value={value} onChange={(e) => setValue(e.target.value)} min={0} step='0.01' className='text-input' />
                     {valueError !== '' ? <span className='text-red-800 text-sm'>{valueError}</span> : <></>}
                 </div>
 

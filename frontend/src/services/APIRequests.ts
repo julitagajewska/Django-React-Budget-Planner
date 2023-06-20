@@ -31,7 +31,6 @@ export const registerUser = async (username: string, email:string, password: str
 
 }
 
-
 export const getUserByUsername = async (accessToken: string | null, username: string | null,  handleError: () => void) => {
     const response = await fetch(`http://127.0.0.1:8000/api/user/${username}`, {
         method: 'GET',
@@ -58,8 +57,27 @@ export const getUserByUsername = async (accessToken: string | null, username: st
     }
 }
 
-
 // Wallets
+export const getWalletByID = async (accessToken: string | null, id: number | undefined, handleError: () => void) => {
+    const response = await fetch(`http://127.0.0.1:8000/api/wallets/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken
+        }
+    })
+
+    
+    if(response.status === 200) {
+        const responseJSON = await response.json();
+        return responseJSON
+    }
+
+    if(response.statusText === 'Unauthorized') {
+        handleError();
+    }
+}
+
 export const getUsersWallets = async (accessToken: string | null, handleError: () => void) => {
     const response = await fetch('http://127.0.0.1:8000/api/wallets/', {
         method: 'GET',
@@ -184,18 +202,18 @@ export const getWalletsCategories = async (accessToken: string | null, id: numbe
 }
 
 // Transactions
-export const createTransaction = async(accessToken: string | null, handleError: () => void) => {
+export const createTransaction = async(accessToken: string | null, transaction: NewTransactionType, handleError: () => void) => {
 
-    var transaction: NewTransactionType = {
-        name: 'test transaction',
-        recipient: 'test',
-        value: '250.00',
-        description: 'test description',
-        date: moment().toDate(),
-        walletID: 1,
-        categoryID: 2,
-        operationTypeID: 1
-    }
+    // var transaction: NewTransactionType = {
+    //     name: 'test transaction',
+    //     recipient: 'test',
+    //     value: '250.00',
+    //     description: 'test description',
+    //     date: moment().toDate(),
+    //     walletID: 1,
+    //     categoryID: 2,
+    //     operationTypeID: 1
+    // }
 
     const response = await fetch(`http://127.0.0.1:8000/api/transactions/create`, {
         method: 'POST',
