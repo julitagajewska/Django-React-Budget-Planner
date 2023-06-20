@@ -6,6 +6,7 @@ import './index.css';
 import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext';
 import { SidebarLinkProvider } from './context/SidebarLinkContext';
+import { ErrorMessagesProvider } from './context/ErrorMessages';
 
 
 const root = ReactDOM.createRoot(
@@ -15,9 +16,11 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <SidebarLinkProvider>
-          <App />
-        </SidebarLinkProvider>
+        <ErrorMessagesProvider>
+          <SidebarLinkProvider>
+            <App />
+          </SidebarLinkProvider>
+        </ErrorMessagesProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

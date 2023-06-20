@@ -17,10 +17,12 @@ type EditTransactionOverlayProps = {
     transaction: TransactionType,
     setVisibility: Dispatch<SetStateAction<boolean>>,
     setDetailsOverlayVisibility: Dispatch<SetStateAction<boolean>>,
-    handleEdit: (transaction: TransactionType) => void
+    handleEdit: (transaction: TransactionType) => void,
+    setManageCategoriesOverlayVisibility: Dispatch<SetStateAction<boolean>>,
 }
 
-const EditTransactionOverlay = ({ categories, transaction, setVisibility, setDetailsOverlayVisibility, handleEdit }: EditTransactionOverlayProps) => {
+const EditTransactionOverlay = ({ categories, transaction, setVisibility, setDetailsOverlayVisibility, handleEdit, setManageCategoriesOverlayVisibility }: EditTransactionOverlayProps) => {
+    console.log(transaction)
 
     // User data
     const [name, setName] = useState<string>(transaction.name);
@@ -46,6 +48,8 @@ const EditTransactionOverlay = ({ categories, transaction, setVisibility, setDet
     let incomeCategories: TransactionCategoryType[] = categories.filter(category => category.operationTypeId === 2);
 
     let category = categories.filter(category => category.id === categoryID)[0]
+    console.log(categories)
+
 
     const handleCancel = () => {
         setVisibility(false);
@@ -71,7 +75,7 @@ const EditTransactionOverlay = ({ categories, transaction, setVisibility, setDet
         }
         setCategoryError('')
 
-        var regex = new RegExp("^[a-zA-Z0-9]+$");
+        var regex = new RegExp("^\\d+(\\.\\d{2})?$");
         if (!regex.test(value)) {
             setValueError('Enter correct value')
             return
@@ -125,13 +129,13 @@ const EditTransactionOverlay = ({ categories, transaction, setVisibility, setDet
 
                 <div className='flex flex-col justify-center items-start'>
                     <p className='opacity-50 text-sm'>Name</p>
-                    <TextInput value={name} onChange={setName} />
+                    <TextInput width='w-10' value={name} onChange={setName} />
                     {nameError !== '' ? <span className='text-red-800 text-sm'>{nameError}</span> : <></>}
                 </div>
 
                 <div className='flex flex-col justify-center items-start'>
                     <p className='opacity-50 text-sm'>Recipient</p>
-                    <TextInput value={recipient} onChange={setRecipient} />
+                    <TextInput width='w-10' value={recipient} onChange={setRecipient} />
                     {recipientError !== '' ? <span className='text-red-800 text-sm'>{recipientError}</span> : <></>}
                 </div>
 
@@ -177,49 +181,50 @@ const EditTransactionOverlay = ({ categories, transaction, setVisibility, setDet
 
                 <div className='flex flex-col justify-center items-start'>
                     <p className='opacity-50 text-sm'>Category</p>
-                    <div className='relative'>
-                        <button className='flex flex-row justify-center items-center w-48 bg-orange-100 hover:bg-opacity-30 transition duration-200 ease-in-out shadow-md bg-opacity-20 cursor-pointer rounded-md pl-6 pr-4 pt-1 pb-1 gap-2' onClick={() => setCategoryDropdownVisible(!categoryDropdownVisible)}>
-                            <span className='overflow-hidden truncate'>{operationTypeID === category.operationTypeId ? category.name : 'Select category ...'}</span>
-                            <BiChevronDown className={`${categoryDropdownVisible ? '-rotate-180' : ''} transition duration-150 ease-in-out`} />
-                        </button>
-                        {categoryError !== '' ? <span className='text-red-800 text-sm'>{categoryError}</span> : <></>}
-                        <ul className={`${categoryDropdownVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} dropdown-background shadow-md overflow-hidden text-ellipsis w-48 transition duration-150 ease-in-out absolute left-0 top-10 z-20 bg-opacity-30 flex flex-col justify-center items-center rounded-xl gap-2 py-2 px-2`}>
-                            <div className='absolute w-full h-full z-30 bg-white bg-opacity-10'></div>
+                    <div className='flex flex-row items-center gap-4'>
+                        <div className='relative'>
+                            <button className='flex flex-row justify-center items-center w-48 bg-orange-100 hover:bg-opacity-30 transition duration-200 ease-in-out shadow-md bg-opacity-20 cursor-pointer rounded-md pl-6 pr-4 pt-1 pb-1 gap-2' onClick={() => setCategoryDropdownVisible(!categoryDropdownVisible)}>
+                                <span className='overflow-hidden truncate'>{operationTypeID === category.operationTypeId ? category.name : 'Select category ...'}</span>
+                                <BiChevronDown className={`${categoryDropdownVisible ? '-rotate-180' : ''} transition duration-150 ease-in-out`} />
+                            </button>
+                            {categoryError !== '' ? <span className='text-red-800 text-sm'>{categoryError}</span> : <></>}
+                            <ul className={`${categoryDropdownVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} dropdown-background shadow-md overflow-hidden text-ellipsis w-48 transition duration-150 ease-in-out absolute left-0 top-10 z-20 bg-opacity-30 flex flex-col justify-center items-center rounded-xl gap-2 py-2 px-2`}>
+                                <div className='absolute w-full h-full z-30 bg-white bg-opacity-10'></div>
 
-                            {operationTypeID === 1 ?
+                                {operationTypeID === 1 ?
 
-                                expenseCategories.map((element) =>
-                                    <li
-                                        className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
-                                        onClick={() => {
-                                            setCategoryID(element.id);
-                                            setCategoryDropdownVisible(false);
-                                        }}>
-                                        {element.name}
-                                    </li>)
+                                    expenseCategories.map((element) =>
+                                        <li
+                                            className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
+                                            onClick={() => {
+                                                setCategoryID(element.id);
+                                                setCategoryDropdownVisible(false);
+                                            }}>
+                                            {element.name}
+                                        </li>)
 
-                                :
+                                    :
 
-                                incomeCategories.map((element) =>
-                                    <li
-                                        className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
-                                        onClick={() => {
-                                            setCategoryID(element.id);
-                                            setCategoryDropdownVisible(false);
-                                        }}>
-                                        {element.name}
-                                    </li>)
+                                    incomeCategories.map((element) =>
+                                        <li
+                                            className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
+                                            onClick={() => {
+                                                setCategoryID(element.id);
+                                                setCategoryDropdownVisible(false);
+                                            }}>
+                                            {element.name}
+                                        </li>)
 
-                            }
+                                }
 
-                        </ul>
+                            </ul>
+                        </div>
+
+                        <ButtonWithChildren onClick={() => setManageCategoriesOverlayVisibility(true)}>
+                            <BiPlus />
+                        </ButtonWithChildren>
                     </div>
                 </div>
-
-                {/* <div className='flex flex-col justify-center items-start'>
-                    <p className='opacity-50 text-sm'>Category</p>
-                    <SelectionInput select={setCategoryID} selectedItemID={categoryID} items={categryItems} />
-                </div> */}
 
                 <div className='flex flex-col justify-center items-start'>
                     <p className='opacity-50 text-sm'>Date</p>
@@ -243,7 +248,7 @@ const EditTransactionOverlay = ({ categories, transaction, setVisibility, setDet
 
                 <div className='flex flex-col justify-center items-start'>
                     <p className='opacity-50 text-sm'>Value</p>
-                    <input type="number" value={value} onChange={(e) => setValue(e.target.value)} min={0} className='text-input' />
+                    <input type="number" value={value} onChange={(e) => setValue(e.target.value)} min={0} step='0.01' className='text-input' />
                     {valueError !== '' ? <span className='text-red-800 text-sm'>{valueError}</span> : <></>}
                 </div>
 

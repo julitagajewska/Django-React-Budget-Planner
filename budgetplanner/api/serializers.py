@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer, CharField
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from users.models import CustomUser, Wallet, Transaction, TransactionCategory
+from users.models import CustomUser, Wallet, Transaction, TransactionCategory, OperationType
 
 # class TransactionSerializer(ModelSerializer):
 #     class Meta:
@@ -31,6 +31,34 @@ class TransactionCategoriesSerializer(ModelSerializer):
     class Meta:
         model = TransactionCategory
         fields = '__all__'
+
+    # def validate(self, data):
+    #     name = data.get('name')
+    #     wallet = Wallet.objects.get(id=data['wallet'].id)
+    #     operationType = OperationType.objects.get(
+    #         id=data['operationType'].id)
+
+    #     if TransactionCategory.objects.filter(name=name, wallet=wallet, operationType=operationType).exists():
+    #         raise ValidationError({'category': 'Category already exists'})
+    #     return data
+
+    # def update(self, instance, validated_data):
+    #     print(self.validated_data['wallet'])
+    #     instance.name = self.validated_data['name'],
+    #     instance.wallet = self.validated_data['wallet'],
+    #     instance.operationType = self.validated_data['operationType'],
+    #     instance.save()
+    #     return instance
+
+    # def save(self):
+    #     category = TransactionCategory(
+    #         name=self.validated_data['name'],
+    #         wallet=self.validated_data['wallet'],
+    #         operationType=self.validated_data['operationType'],
+    #     )
+
+    #     category.save()
+    #     return category
 
 
 class RegisterSerializer(ModelSerializer):
@@ -64,22 +92,8 @@ class RegisterSerializer(ModelSerializer):
             email=self.validated_data['email']
         )
         password = self.validated_data['password']
-        # password2 = self.validated_data['password2']
-
-        # if password != password2:
-        #     raise ValidationError({'password': 'Passwords must match'})
-
-        # try:
-        #     validate_password(
-        #         password=self.validated_data['password'], user=account)
-        # except ValidationError as err:
-        #     raise ValidationError({'password': err.messages})
 
         account.set_password(password)
+
         account.save()
         return account
-
-# class CategorySerializer(ModelSerializer):
-#     class Meta:
-#         model = Category
-#         fields = '__all__'
