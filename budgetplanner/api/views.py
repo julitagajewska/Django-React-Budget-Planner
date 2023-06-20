@@ -10,8 +10,8 @@ from decimal import Decimal
 # from .models import Transaction
 # from .serializers import TransactionSerializer
 
-from .serializers import TransactionCategoriesSerializer, TransactionSerializer, UserSerializer, WalletsSerializer, RegisterSerializer
-from users.models import CustomUser, Wallet, TransactionCategory, Transaction, OperationType
+from .serializers import TransactionCategoriesSerializer, TransactionSerializer, UserSerializer, UsernameSerializer, WalletCategoriesSerializer, WalletsSerializer, RegisterSerializer
+from users.models import CustomUser, Wallet, TransactionCategory, Transaction, OperationType, WalletCategory
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -62,6 +62,13 @@ def registerUser(request):
         else:
             return Response(serializer.errors, status=400)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getUserById(request, pk):
+    user = CustomUser.objects.get(id=pk)
+    serializer = UsernameSerializer(user, many=False)
+    return Response(serializer.data)
 
 # TRANSACTIONS
 
@@ -149,6 +156,14 @@ def deleteTransaction(request, pk):
     return Response('Transaction deleted')
 
 # WALLETS
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getAllWalletsCategories(request):
+    categories = WalletCategory.objects.all()
+    serializer = WalletCategoriesSerializer(categories, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])

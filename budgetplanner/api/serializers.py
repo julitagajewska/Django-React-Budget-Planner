@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer, CharField
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from users.models import CustomUser, Wallet, Transaction, TransactionCategory, OperationType
+from users.models import CustomUser, Wallet, Transaction, TransactionCategory, OperationType, WalletCategory
 
 # class TransactionSerializer(ModelSerializer):
 #     class Meta:
@@ -12,7 +12,7 @@ from users.models import CustomUser, Wallet, Transaction, TransactionCategory, O
 class UserSerializer(ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'wallets', 'profile_picture']
+        fields = ['id', 'username', 'email', 'wallets', 'profile_picture']
 
 
 class WalletsSerializer(ModelSerializer):
@@ -27,10 +27,22 @@ class TransactionSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class UsernameSerializer(ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['username']
+
+
 class TransactionCategoriesSerializer(ModelSerializer):
     class Meta:
         model = TransactionCategory
         fields = '__all__'
+
+
+class WalletCategoriesSerializer(ModelSerializer):
+    class Meta:
+        model = WalletCategory
+        fields = ['name']
 
     # def validate(self, data):
     #     name = data.get('name')

@@ -11,6 +11,7 @@ urlpatterns = [
     path('', views.getRoutes, name="routes"),
     path('register', views.registerUser, name="register"),
     path('user/<str:username>', views.getUser),
+    path('user/id/<str:pk>', views.getUserById),
 
     path('wallets/', views.getUsersWallets),
     path('wallets/<str:pk>', views.getWalletById),
@@ -28,4 +29,5 @@ urlpatterns = [
 
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('wallets/categories/all', views.getAllWalletsCategories),
 ]

@@ -60,11 +60,11 @@ class WalletsTransactionsAdminInline(admin.TabularInline):
     model = Transaction
     formset = TransactionFormSet
 
-    def get_formset(self, request, obj=None, **kwargs):
-        formset_class = super().get_formset(request, obj, **kwargs)
-        formset_class.form.base_fields['category'].queryset = TransactionCategory.objects.filter(
-            wallet_id=obj.id)
-        return formset_class
+    # def get_formset(self, request, obj, **kwargs):
+    #     formset_class = super().get_formset(request, obj, **kwargs)
+    #     formset_class.form.base_fields['category'].queryset = TransactionCategory.objects.filter(
+    #         wallet_id=obj.id)
+    #     return formset_class
 
 
 class WalletAdmin(admin.ModelAdmin):

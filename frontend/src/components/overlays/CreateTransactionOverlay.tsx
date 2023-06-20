@@ -168,36 +168,37 @@ const CreateTransactionOverlay = ({ setOverlayVisibility, categories, handleCrea
                                     <BiChevronDown className={`${categoryDropdownVisible ? '-rotate-180' : ''} transition duration-150 ease-in-out`} />
                                 </button>
                                 {categoryError !== '' ? <span className='text-red-800 text-sm'>{categoryError}</span> : <></>}
-                                <ul className={`${categoryDropdownVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} dropdown-background shadow-md overflow-hidden text-ellipsis w-48 transition duration-150 ease-in-out absolute left-0 top-10 z-20 bg-opacity-30 flex flex-col justify-center items-center rounded-xl gap-2 py-2 px-2`}>
-                                    <div className='absolute w-full h-full z-30 bg-white bg-opacity-10'></div>
+                                <div className={`${categoryDropdownVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} h-36 overflow-auto dropdown-background shadow-md text-ellipsis w-48 transition duration-150 ease-in-out absolute left-0 top-10 z-20 bg-opacity-30 flex flex-col justify-center items-center rounded-xl gap-2 py-2 px-2`}>
+                                    <ul className='absolute top-2 z-2'>
 
-                                    {operationTypeID === 1 ?
+                                        {operationTypeID === 1 ?
 
-                                        expenseCategories.map((element) =>
-                                            <li
-                                                className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
-                                                onClick={() => {
-                                                    setCategoryID(element.id);
-                                                    setCategoryDropdownVisible(false);
-                                                }}>
-                                                {element.name}
-                                            </li>)
+                                            expenseCategories.map((element) =>
+                                                <li
+                                                    className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
+                                                    onClick={() => {
+                                                        setCategoryID(element.id);
+                                                        setCategoryDropdownVisible(false);
+                                                    }}>
+                                                    {element.name}
+                                                </li>)
 
-                                        :
+                                            :
 
-                                        incomeCategories.map((element) =>
-                                            <li
-                                                className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
-                                                onClick={() => {
-                                                    setCategoryID(element.id);
-                                                    setCategoryDropdownVisible(false);
-                                                }}>
-                                                {element.name}
-                                            </li>)
+                                            incomeCategories.map((element) =>
+                                                <li
+                                                    className='cursor-pointer overflow-hidden truncate w-full text-center bg-orange-100 bg-opacity-0 hover:bg-opacity-30 z-40 transition duration-200 ease-in-out py-1 px-2 rounded-lg'
+                                                    onClick={() => {
+                                                        setCategoryID(element.id);
+                                                        setCategoryDropdownVisible(false);
+                                                    }}>
+                                                    {element.name}
+                                                </li>)
 
-                                    }
+                                        }
 
-                                </ul>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <ButtonWithChildren onClick={() => setManageCategoriesOverlayVisibility(true)}>
