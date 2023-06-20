@@ -1,7 +1,37 @@
 import moment from "moment";
 import { NewTransactionType, TransactionCategoryType, TransactionType, UserType } from "../data/types/Index";
+import { useContext } from "react";
+
 
 // User
+export const registerUser = async (username: string, email:string, password: string, confirmPassword: string) => {
+    var body = {
+        username: username,
+        email: email,
+        password: password,
+        password2: confirmPassword
+    }
+
+    const response = await fetch(`http://127.0.0.1:8000/api/register`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body)
+    })
+    
+    const responseJSON = await response.json();
+    console.log(responseJSON)
+
+    if(response.status === 200) {
+        return('User registered successfully!')
+    } else {
+        return responseJSON
+    }
+
+}
+
+
 export const getUserByUsername = async (accessToken: string | null, username: string | null,  handleError: () => void) => {
     const response = await fetch(`http://127.0.0.1:8000/api/user/${username}`, {
         method: 'GET',

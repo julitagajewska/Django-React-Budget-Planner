@@ -44,7 +44,7 @@ def get_default_profile_image():
 
 
 class CustomUser(AbstractUser):
-    # username = models.CharField(max_length=30, unique=True)
+    username = models.CharField(max_length=30, unique=True)
     # date_joined = models.DateTimeField(
     #     verbose_name="date joined", auto_now_add=True)
     # last_login = models.DateTimeField(verbose_name="last login", auto_now=True)
@@ -55,7 +55,7 @@ class CustomUser(AbstractUser):
     # hide_email = models.BooleanField(default=True)
     email = models.EmailField(unique=True)
     profile_picture = models.ImageField(
-        default='default.jpg', upload_to='profile_pictures')
+        default='profile_pictures/default.png', upload_to='profile_pictures')
     wallets = models.ManyToManyField('Wallet', blank=True)
 
     # objects = MyAccountManager()

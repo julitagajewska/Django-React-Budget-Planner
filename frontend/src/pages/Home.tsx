@@ -92,15 +92,18 @@ const Home = () => {
         getUsersWallets(authTokens.accessToken, logout)
             .then((response) => {
                 setWallets(response);
-                setSelectedWallet(response[0])
 
-                getWalletsTransactions(authTokens.accessToken, response[0].id, logout)
-                    .then((response) => {
-                        setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
-                        setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
-                        setTransactions(response)
-                        setRecentTransactions(getRecentTransactionsArray(response));
-                    })
+                if (response[0] !== undefined) {
+                    setSelectedWallet(response[0])
+
+                    getWalletsTransactions(authTokens.accessToken, response[0].id, logout)
+                        .then((response) => {
+                            setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
+                            setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
+                            setTransactions(response)
+                            setRecentTransactions(getRecentTransactionsArray(response));
+                        })
+                }
             })
 
         getUserByUsername(authTokens.accessToken, user.username, logout)
