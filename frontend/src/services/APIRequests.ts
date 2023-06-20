@@ -44,12 +44,54 @@ export const getUserByUsername = async (accessToken: string | null, username: st
         const responseJSON = await response.json();
 
         let user: UserType = {
+            id: responseJSON.id,
             username: responseJSON.username,
             email: responseJSON.email,
             imageSrc: responseJSON.profile_picture
         }
 
         return user;
+    }
+
+    if(response.statusText === 'Unauthorized') {
+        handleError();
+    }
+}
+
+export const getAllWalletsCategories = async (accessToken: string | null,  handleError: () => void) => {
+    const response = await fetch(`http://127.0.0.1:8000/api/wallets/categories/all`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken
+        }
+    })
+
+    if(response.status === 200) {
+        const responseJSON = await response.json();
+
+        return responseJSON;
+    }
+
+    if(response.statusText === 'Unauthorized') {
+        handleError();
+    }
+}
+
+
+export const getUserById = async (accessToken: string | null, id: number | null,  handleError: () => void) => {
+    const response = await fetch(`http://127.0.0.1:8000/api/user/id/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken
+        }
+    })
+
+    if(response.status === 200) {
+        const responseJSON = await response.json();
+
+        return responseJSON['username'];
     }
 
     if(response.statusText === 'Unauthorized') {
@@ -90,6 +132,7 @@ export const getUsersWallets = async (accessToken: string | null, handleError: (
     
     if(response.status === 200) {
         const responseJSON = await response.json();
+        console.log(responseJSON)
         return responseJSON
     }
 

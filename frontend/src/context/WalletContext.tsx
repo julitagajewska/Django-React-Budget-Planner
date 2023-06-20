@@ -6,6 +6,7 @@ export type WalletContextType = {
 }
 
 export type WalletType = {
+    [x: string]: any;
     id: number,
     name: string,
     categories: CategoryType[],

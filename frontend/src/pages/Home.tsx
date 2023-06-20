@@ -18,12 +18,15 @@ import CreateTransactionOverlay from '../components/overlays/CreateTransactionOv
 import EditTransactionOverlay from '../components/overlays/EditTransactionOverlay';
 import ManageCategoriesOverlay from '../components/overlays/ManageCategoriesOverlay';
 import { ErrorMessagesContext, ErrorMessagesContextType } from '../context/ErrorMessages';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
 
     // Sidebar active link context
     const { active, setActive } = useContext(SidebarLinkContext) as SidebarLinkContextType;
     const { categoryError, setCategoryError } = useContext(ErrorMessagesContext) as ErrorMessagesContextType;
+    const navigate = useNavigate();
+
     setActive("Dashboard");
 
     // User context
@@ -89,7 +92,20 @@ const Home = () => {
     const [isEditTransactionOverlayVisibile, setIsEditTransactionOverlayVisibile] = useState<boolean>(false);
 
     // Edit transaction overlay
-    const [isManageCategoriesOverlayVisibile, setIsManageCategoriesOverlayVisibile] = useState<boolean>(true);
+    const [isManageCategoriesOverlayVisibile, setIsManageCategoriesOverlayVisibile] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (selectedWallet !== undefined) {
+            getWalletsTransactions(authTokens.accessToken, selectedWallet.id, logout)
+                .then((response) => {
+                    setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
+                    setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
+                    setTransactions(response)
+                    setRecentTransactions(getRecentTransactionsArray(response));
+                })
+        }
+
+    }, [selectedWallet])
 
     useEffect(() => {
         getUsersWallets(authTokens.accessToken, logout)
@@ -130,23 +146,15 @@ const Home = () => {
     }, [selectedWallet])
 
     const updateTransactions = () => {
-        if (selectedWallet !== undefined)
-            getUsersWallets(authTokens.accessToken, logout)
+        if (selectedWallet !== undefined) {
+            getWalletsTransactions(authTokens.accessToken, selectedWallet.id, logout)
                 .then((response) => {
-                    setWallets(response);
-
-                    if (response[0] !== undefined) {
-                        setSelectedWallet(response[0])
-
-                        getWalletsTransactions(authTokens.accessToken, response[0].id, logout)
-                            .then((response) => {
-                                setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
-                                setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
-                                setTransactions(response)
-                                setRecentTransactions(getRecentTransactionsArray(response));
-                            })
-                    }
+                    setIncomesTotal(getTotalIncomesValue(getIncomes(response)));
+                    setExpensesTotal(getTotalExpensesValue(getExpenses(response)));
+                    setTransactions(response)
+                    setRecentTransactions(getRecentTransactionsArray(response));
                 })
+        }
     }
 
     const handleCreateTransaction = (transaction: NewTransactionType) => {
@@ -260,7 +268,7 @@ const Home = () => {
 
                 {/* USER */}
                 <div>
-                    <div className='flex flex-row items-center gap-5'>
+                    <div className='flex flex-row items-center gap-5 cursor-pointer' onClick={() => navigate('../profile')}>
                         <span>{user.username}</span>
                         {userImageSrc !== undefined && userImageSrc !== '' ? <img className='bg-slate-500 w-10 h-10 rounded-full' src={require(`../assets${userImageSrc}`)} alt="user" /> : <></>}
                     </div>
